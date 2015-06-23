@@ -9,7 +9,7 @@ GameField::GameField() {
 }
 GameField::~GameField(){
 }
-//zeichnet das Grundlegende Spielfeld
+//zeichnet das grundlegende Spielfeld
 void GameField::drawPlaine(float fieldSize) {
 	this->fieldSize = fieldSize;
 	glBegin(GL_QUADS);
