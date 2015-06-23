@@ -11,8 +11,11 @@
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
 #include "ObjectForProgramm.h"
+#include "ObjectManager.h"
 using namespace std;
 
+//Manager for all Objects in the Game
+static ObjectManager objectManager;
 
 static ObjectForProgramm objects;
 static float edgeLength = 2.0f;
@@ -149,23 +152,33 @@ void InitLighting() {
 void Preview(GLFWwindow* window) {
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_NORMALIZE);
+	glLoadIdentity();
+	glTranslated(xCord, yCord, -10);
+	objectManager.initGameField(10.0f);
 }
 
 int main() {
   GLFWwindow* window = NULL;
+
   printf("Here we go!\n");
+
   if(!glfwInit()){
     return -1;
   }
+
   window = glfwCreateWindow(window_width_, window_height_,
                             "Open The Box", NULL, NULL);
+
   if(!window) {
     glfwTerminate();
     return -1;
   }
+
   glfwMakeContextCurrent(window);
   InitLighting();
+
   while(!glfwWindowShouldClose(window)) {
+
     // sets the Background Color // TODO: maybe we want a Texture
     glClearColor(0.8, 0.8, 0.8, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

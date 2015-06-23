@@ -6,7 +6,7 @@ ColorSetter::ColorSetter() {
 ColorSetter::~ColorSetter(){
 }
 
-void SetMaterialColor(int side, double r, double g, double b) {
+void ColorSetter::SetMaterialColor(int side, double r, double g, double b) {
   float	amb[4], dif[4], spe[4];
   int mat;
 
