@@ -9,8 +9,8 @@ class ObjectManager{
 private:
 	ColorSetter *colorSetter  = new ColorSetter();
 	GameField *gameField = new GameField();
-	std::Vector<Cylinder> cylinderVector;
-	std::Vector<Wall> wallVector;
+	//std::Vector<Cylinder> cylinderVector;
+	//std::Vector<Wall> wallVector;
 public:
 	ObjectManager();
 	~ObjectManager();
