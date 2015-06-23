@@ -8,6 +8,8 @@ ObjectManager::ObjectManager() {
 ObjectManager::~ObjectManager(){
 }
 void ObjectManager::initGameField(float fieldSize) {
+	glLoadIdentity();
+	glTranslated(0, 0, -15);
 	colorSetter->SetMaterialColor(2,0.2196,0.949,0.5843);
 	gameField->drawPlaine(fieldSize);
 }
