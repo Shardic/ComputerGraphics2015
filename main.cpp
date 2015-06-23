@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <windows.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -61,12 +62,28 @@ void SetMaterialColor(int side, double r, double g, double b) {
   glMaterialf( mat, GL_SHININESS, 20);
 }
 
-
 static void key_callbackBox(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     	 glfwSetWindowShouldClose(window, GL_TRUE);
     }
+
+    if (key == GLFW_KEY_O && action == GLFW_PRESS) {
+    	 objects.setOpen(true);
+    }
+    if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+    	 objects.setOpen(false);
+    }
+
+    //Zum aendern des schliessmechanismusses
+    if (key == GLFW_KEY_H && action == GLFW_PRESS) {
+     	 if (closeNormal) {
+     		 closeNormal = false;
+     	 } else {
+     		 closeNormal = true;
+     	 }
+     }
+
 
     if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
     	rotateUpDown += 1;
@@ -86,6 +103,7 @@ static void key_callbackBox(GLFWwindow* window, int key, int scancode, int actio
     if (key == GLFW_KEY_Q && action == GLFW_REPEAT) {
     	rotateZ += 1;
     }
+
 
     //movement up down left right
     if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
@@ -127,9 +145,9 @@ static void key_callbackBox(GLFWwindow* window, int key, int scancode, int actio
     	zCord += 1;
     }
 }
-// The mouse Position gets asked and translated to world coordinates
-// TODO: gehört hier die Abfrage ob er klickt auch dazu?)
+
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
+
 	yMouse = 5 - ypos/window_width_ * 10;
 	xMouse = -5 + xpos/window_height_ * 10;
 }
@@ -142,29 +160,37 @@ void InitLighting() {
   GLfloat white[4] = {1.0,1.0,1.0,1};
   GLfloat red[4]  = {1.0, .8,  .8,  1};
   GLfloat blue[4] = { .8, .8, 1.0,  1};
+
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   glShadeModel(GL_SMOOTH);
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
   glEnable(GL_LIGHTING);
+
   glLightfv(GL_LIGHT1, GL_POSITION, lp1);
   glLightfv(GL_LIGHT1, GL_DIFFUSE,  red);
   glLightfv(GL_LIGHT1, GL_SPECULAR, red);
   glEnable(GL_LIGHT1);
+
   glLightfv(GL_LIGHT2, GL_POSITION, lp2);
   glLightfv(GL_LIGHT2, GL_DIFFUSE,  blue);
   glLightfv(GL_LIGHT2, GL_SPECULAR, blue);
   glEnable(GL_LIGHT2);
+
   glLightfv(GL_LIGHT3, GL_POSITION, lp3);
   glLightfv(GL_LIGHT3, GL_DIFFUSE,  white);
   glLightfv(GL_LIGHT3, GL_SPECULAR, white);
   glEnable(GL_LIGHT3);
+
   glClearColor(1, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   // init viewport to canvassize
   glViewport(0, 0, window_width_, window_height_);
+
   // init coordinate system
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -175,32 +201,80 @@ void InitLighting() {
 
 // draw the entire scene
 void Preview(GLFWwindow* window) {
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_NORMALIZE);
+  glMatrixMode(GL_MODELVIEW);
+  glEnable(GL_NORMALIZE);
+
+  glPushMatrix();
+  // der Code für den Ball und die Kollisionserkennung
+  glLoadIdentity();
+  glfwSetCursorPosCallback(window, cursor_pos_callback);
+  glTranslated(xMouse,yMouse,-10);
+  SetMaterialColor(1, 1, 1, 0);
+  SetMaterialColor(2, 0, 0, 1);
+  GLUquadric* quadricObject = gluNewQuadric();
+  gluSphere(quadricObject, 0.8, 50, 16);
+  glPopMatrix();
+
+  //MaterialColors for the cube
+  SetMaterialColor(1, 1, 0, 0);
+  SetMaterialColor(2, 0, 0, 1);
+  glLoadIdentity();
+
+  glfwSetKeyCallback(window, key_callbackBox);
+  glTranslated(xCord, yCord, zCord);
+  glRotated(rotateUpDown, 1, 0, 0);
+  glRotated(rotateRightLeft, 0, 1, 0);
+  glRotated(rotateZ,0,0,1);
+
+  glPushMatrix();
+  objects.drawCubeWithoutTop(edgeLength);
+  glPushMatrix();
+  if(closeNormal) {
+	  glTranslated(0, edgeLength/2, -edgeLength/2);
+	  objects.openCloseNormal();
+	  objects.drawTopOfCube(edgeLength);
+  } else {
+	  //Wegen der komplexität des Mechanismuss wird die Zeichnung während des schließens vorgenommen
+	  glTranslated(0, edgeLength/2, -edgeLength/2);
+	  objects.openCloseAccordion(edgeLength);
+  }
+  glPopMatrix();
+  glPopMatrix();
 }
 
 int main() {
   GLFWwindow* window = NULL;
+
   printf("Here we go!\n");
+
   if(!glfwInit()){
     return -1;
   }
+
   window = glfwCreateWindow(window_width_, window_height_,
                             "Open The Box", NULL, NULL);
   if(!window) {
     glfwTerminate();
     return -1;
   }
+
   glfwMakeContextCurrent(window);
   InitLighting();
+
   while(!glfwWindowShouldClose(window)) {
-    // sets the Background Color // TODO: maybe we want a Texture
+    // switch on lighting (or you don't see anything)
+
+
+    // set background color
     glClearColor(0.8, 0.8, 0.8, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     // draw the scene
     Preview(window);
+
     // make it appear (before this, it's hidden in the rear buffer)
     glfwSwapBuffers(window);
+
     glfwPollEvents();
   }
 
@@ -210,42 +284,3 @@ int main() {
 
   return 0;
 }
-
-
-
-
-
-
-//Das war in der Preview:
-/*
-
-// der Code für den Ball und die Kollisionserkennung
-glLoadIdentity();
-glfwSetCursorPosCallback(window, cursor_pos_callback);
-glTranslated(xMouse,yMouse,-10);
-SetMaterialColor(1, 1, 1, 0);
-SetMaterialColor(2, 0, 0, 1);
-
-//MaterialColors for the cube
-SetMaterialColor(1, 1, 0, 0);
-SetMaterialColor(2, 0, 0, 1);
-glLoadIdentity();
-
-glfwSetKeyCallback(window, key_callbackBox);
-glTranslated(xCord, yCord, zCord);
-glRotated(rotateUpDown, 1, 0, 0);
-glRotated(rotateRightLeft, 0, 1, 0);
-glRotated(rotateZ,0,0,1);
-
-objects.drawCubeWithoutTop(edgeLength);
-
-if(closeNormal) {
-	  glTranslated(0, edgeLength/2, -edgeLength/2);
-	  objects.openCloseNormal();
-	  objects.drawTopOfCube(edgeLength);
-} else {
-	  //Wegen der komplexität des Mechanismuss wird die Zeichnung während des schließens vorgenommen
-	  glTranslated(0, edgeLength/2, -edgeLength/2);
-	  objects.openCloseAccordion(edgeLength);
-}
-*/
