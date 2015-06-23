@@ -153,7 +153,7 @@ void Preview(GLFWwindow* window) {
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_NORMALIZE);
 	glLoadIdentity();
-	glTranslated(xCord, yCord, -10);
+	glTranslated(xCord, yCord, -15);
 	objectManager.initGameField(10.0f);
 }
 

@@ -8,8 +8,6 @@ ObjectManager::ObjectManager() {
 ObjectManager::~ObjectManager(){
 }
 void ObjectManager::initGameField(float fieldSize) {
-	colorSetter->SetMaterialColor(1,1.0,0.0,0.0);
+	colorSetter->SetMaterialColor(2,0.2196,0.949,0.5843);
 	gameField->drawPlaine(fieldSize);
-//	this->colorSetter.SetMaterialColor(1,1,1,1);
-//	this->gameField.drawPlaine(fieldSize);
 }

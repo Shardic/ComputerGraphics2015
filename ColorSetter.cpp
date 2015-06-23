@@ -1,5 +1,7 @@
 #include <GL/gl.h>
 #include "ColorSetter.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 ColorSetter::ColorSetter() {
 }
@@ -7,7 +9,10 @@ ColorSetter::~ColorSetter(){
 }
 
 void ColorSetter::SetMaterialColor(int side, double r, double g, double b) {
-  float	amb[4], dif[4], spe[4];
+
+	printf("testFarbe");
+
+	float	amb[4], dif[4], spe[4];
   int mat;
 
   dif[0] = r;
