@@ -5,4 +5,5 @@ private:
 public:
 	GameField();
 	~GameField();
+	void drawPlaine(float fieldSize);
 };
