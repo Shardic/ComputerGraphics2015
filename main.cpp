@@ -10,25 +10,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
-#include "ObjectForProgramm.h"
 #include "ObjectManager.h"
 using namespace std;
 
 //Manager for all Objects in the Game
 static ObjectManager objectManager;
 
-static ObjectForProgramm objects;
-static float edgeLength = 2.0f;
+static bool playerSetsObjects = true;
 
 static double xCord = 0;
 static double yCord = 0;
-static double zCord = -10;
+static double zCord = -25;
 
 static double rotateRightLeft = 0;
 static double rotateUpDown = 0;
 static double rotateZ = 0;
-
-static boolean closeNormal = true;
 
 static double xMouse = 0;
 static double yMouse = 0;
@@ -36,7 +32,20 @@ static double yMouse = 0;
 static double window_width_ = 700;
 static double window_height_ = 700;
 
+static void key_firstCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    	 glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
+    if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
+    	 playerSetsObjects = false;
+    }
+
+}
+
+// Die Funktion die beim durchlaufen des Spiels fuer die Tasteneingabe gebraucht wird
+//Dadurch wird die Rotation usw. umgesetzt
 static void key_callbackBox(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -143,7 +152,7 @@ void InitLighting() {
   // init coordinate system
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glFrustum(-1.0, 1.0, -1.0, 1.0, edgeLength, 100);
+  glFrustum(-1.0, 1.0, -1.0, 1.0, 2.0f, 100);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -152,7 +161,22 @@ void InitLighting() {
 void Preview(GLFWwindow* window) {
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_NORMALIZE);
+	//die Rotationen der gezeigten Objekte im Spiel werden im Manager durchgeführt
+	objectManager.transRotateAllObjekts(xCord,yCord,zCord,rotateRightLeft,rotateUpDown,rotateZ);
+	//das Spielfeld wird erstellt und alle Objekte die darauf existieren gezeichnet
 	objectManager.initGameField(10.0f);
+	//Es wird geprüft welche Aktion grade ausgeführt wird
+	//ob der Spieler gegenstände setzt der das Spiel läuft und die Kugel sich bewegt
+	if (playerSetsObjects) {
+		//In diesem Teil der Schleife kann der Nutzer von der Draufsicht
+		// die Objekte setzen
+		// also eine bestimmte Anzahl an Mauern un Zylindern
+		glfwSetKeyCallback(window, key_firstCallback);
+	} else {
+		//Wenn das Spiel gestartet wurde wird die sich
+		//bewegende Kugel nur noch gezeichnet
+		glfwSetKeyCallback(window, key_callbackBox);
+	}
 }
 
 int main() {

@@ -9,10 +9,12 @@ class ObjectManager{
 private:
 	ColorSetter *colorSetter  = new ColorSetter();
 	GameField *gameField = new GameField();
-	//std::Vector<Cylinder> cylinderVector;
-	//std::Vector<Wall> wallVector;
+	std::vector<Cylinder> cylinderVector;
+	std::vector<Wall> wallVector;
 public:
 	ObjectManager();
 	~ObjectManager();
+	void transRotateAllObjekts(double xcord, double ycord, double zcoord,
+			double rotateRightLeft, double rotateUpDown, double rotateZ);
 	void initGameField(float fieldSize);
 };
