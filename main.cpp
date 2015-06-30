@@ -17,6 +17,9 @@ using namespace std;
 static ObjectManager objectManager;
 
 static bool playerSetsObjects = true;
+static bool playerSetsWall = false;
+static bool playerSetsCylinder = false;
+static int wallClickCounter = 0;
 
 static double xCord = 0;
 static double yCord = 0;
@@ -41,7 +44,16 @@ static void key_firstCallback(GLFWwindow* window, int key, int scancode, int act
     if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
     	 playerSetsObjects = false;
     }
+
     //Tasten um zwischen Mauern und Zylindern umzuschalten:
+    //Mauer
+    if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+    	playerSetsWall = true;
+    }
+    //Zylinder
+    if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+        playerSetsCylinder = true;
+    }
 
 }
 //mausklicks werden hier abgefangen
@@ -49,6 +61,26 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     	cout << "klick" << endl;
+
+
+    	while (playerSetsCylinder) {
+    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    			playerSetsCylinder = false;
+    		}
+    	}
+
+
+    	while (playerSetsWall && wallClickCounter != 2) {
+
+    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    			wallClickCounter++;
+    		}
+    	}
+    	if (wallClickCounter == 2) {
+    		playerSetsWall = false;
+    		wallClickCounter = 0;
+    	}
+
     }
 }
 

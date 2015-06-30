@@ -58,7 +58,7 @@ void ObjectManager::initGameField(float fieldSize) {
 	glPopMatrix();
 }
 
-void ObjectManager::drawPlacedObjects() {
+void ObjectManager::drawPlacedWall() {
 	//TODO löschen:
 	Wall *testWall = new Wall();
 	testWall->setWall(3.924324, 4.234, 6.4342, -3.342);
