@@ -22,6 +22,9 @@ void ObjectManager::initGameField(float fieldSize) {
 	gameField->drawPlaine(fieldSize);
 	//Punkte für die Mauern errechnen und speichern
 	//Zwischen den Eckpunkten Mauern erstellen
-	//Kugel erstellen
+	//Kugel erstellen (20/20 muss noch mal geschaut werden ob wir eine AUfloesung implementieren usw....
+	//Vorher muss die Kugel noch zu einer Bestimmten Position gebracht werden
+	glTranslated(9,9,0.5);
+	gameBall->drawSphere(0.5,20,50);
 	//Ziel erstellen
 }

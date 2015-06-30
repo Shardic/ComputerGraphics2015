@@ -20,7 +20,7 @@ static bool playerSetsObjects = true;
 
 static double xCord = 0;
 static double yCord = 0;
-static double zCord = -25;
+static double zCord = -13;
 
 static double rotateRightLeft = 0;
 static double rotateUpDown = 0;
@@ -41,6 +41,7 @@ static void key_firstCallback(GLFWwindow* window, int key, int scancode, int act
     if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
     	 playerSetsObjects = false;
     }
+    //Tasten um zwischen Mauern und Zylindern umzuschalten:
 
 }
 
@@ -152,7 +153,7 @@ void InitLighting() {
   // init coordinate system
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glFrustum(-1.0, 1.0, -1.0, 1.0, 2.0f, 100);
+  glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0f, 100);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -162,11 +163,13 @@ void Preview(GLFWwindow* window) {
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_NORMALIZE);
 	//die Rotationen der gezeigten Objekte im Spiel werden im Manager durchgeführt
-	objectManager.transRotateAllObjekts(xCord,yCord,zCord,rotateRightLeft,rotateUpDown,rotateZ);
+	objectManager.transRotateAllObjekts(xCord,yCord,zCord,
+			rotateRightLeft,rotateUpDown,rotateZ);
 	//das Spielfeld wird erstellt und alle Objekte die darauf existieren gezeichnet
 	objectManager.initGameField(10.0f);
-	//Es wird geprüft welche Aktion grade ausgeführt wird
-	//ob der Spieler gegenstände setzt der das Spiel läuft und die Kugel sich bewegt
+	//Es wird geprüft welche Aktion grade ausgeführt wird:
+	//ob der Spieler Gegenstände setzt oder das Spiel läuft und
+	// die Kugel sich bewegt
 	if (playerSetsObjects) {
 		//In diesem Teil der Schleife kann der Nutzer von der Draufsicht
 		// die Objekte setzen
@@ -174,7 +177,7 @@ void Preview(GLFWwindow* window) {
 		glfwSetKeyCallback(window, key_firstCallback);
 	} else {
 		//Wenn das Spiel gestartet wurde wird die sich
-		//bewegende Kugel nur noch gezeichnet
+		//bewegende Kugel bewegend gezeichnet und Rotationstasten funktionieren nun
 		glfwSetKeyCallback(window, key_callbackBox);
 	}
 }

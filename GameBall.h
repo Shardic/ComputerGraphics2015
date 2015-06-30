@@ -5,4 +5,5 @@ private:
 public:
 	GameBall();
 	~GameBall();
+	void drawSphere(double r, int lats, int longs);
 };
