@@ -58,7 +58,7 @@ void ObjectManager::initGameField(float fieldSize) {
 	glPopMatrix();
 }
 
-void ObjectManager::drawPlacedWall() {
+void ObjectManager::drawPlacedObjects() {
 	//TODO löschen:
 	Wall *testWall = new Wall();
 	testWall->setWall(3.924324, 4.234, 6.4342, -3.342);
@@ -71,6 +71,19 @@ void ObjectManager::drawPlacedWall() {
 		wallVector[i].drawWall();
 	}
 	glPopMatrix();
+}
+
+void ObjectManager::drawUsersWall(float x1, float y1, float x2, float y2) {
+	Wall *wall = new Wall();
+	wall->setWall(x1, y1, x2, y2);
+	wallVector.push_back(*wall);
+	glPushMatrix();
+	// Ein etwas anderes Rot für die gesetzten Walls
+	colorSetter->SetMaterialColor(2,0.5,0.1,0);
+	colorSetter->SetMaterialColor(1,0.5,0.1,0);
+	wall->drawWall();
+	glPopMatrix();
+
 }
 
 void ObjectManager::drawGameBalls() {

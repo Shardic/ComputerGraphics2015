@@ -62,18 +62,40 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     	cout << "klick" << endl;
 
-
     	while (playerSetsCylinder) {
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    			double *x;
+    			double *y;
+    			glfwGetCursorPos(window, x, y);
+    			float* x1 = (float)x;
+    			float* y1 = (float)y;
     			playerSetsCylinder = false;
     		}
     	}
 
 
     	while (playerSetsWall && wallClickCounter != 2) {
+    		float* x1;
+    		float* y1;
+    		float* x2;
+    		float* y2;
 
-    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 0) {
+    			double *x;
+    			double *y;
     			wallClickCounter++;
+    			glfwGetCursorPos(window, x, y);
+    			x1 = (float)x;
+    			y1 = (float)y;
+    		}
+    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 1) {
+    			double *x;
+    			double *y;
+    			wallClickCounter++;
+    		    glfwGetCursorPos(window, x, y);
+    		    x2 = (float)x;
+    		    y2 = (float)y;
+    		    objectManager.drawUsersWall(x1, y1, x2, y2);
     		}
     	}
     	if (wallClickCounter == 2) {

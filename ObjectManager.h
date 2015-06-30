@@ -22,7 +22,8 @@ public:
 	void transRotateAllObjekts(double xcord, double ycord, double zcoord,
 			double rotateRightLeft, double rotateUpDown, double rotateZ);
 	void initGameField(float fieldSize);
-	void drawPlacedWall();
+	void drawPlacedObjects();
+	void drawUsersWall(float x1, float y1, float x2, float y2);
 	void drawGameBalls();
 	void checkColision();
 };
