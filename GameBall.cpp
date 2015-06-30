@@ -7,7 +7,8 @@ GameBall::GameBall() {
 }
 GameBall::~GameBall(){
 }
-void GameBall::drawSphere(double r, int lats, int longs) {
+void GameBall::drawSphere() {
+	glTranslated(xPos,yPos,zPos);
 	int i, j;
 	 for(i = 1; i <= lats; i++) {
 		 double lat0 = M_PI * (-0.5 + (double) (i - 1) / lats);
@@ -24,11 +25,27 @@ void GameBall::drawSphere(double r, int lats, int longs) {
 		 double x = cos(lng);
 		 double y = sin(lng);
 
-	 	 glNormal3f(x * zr0*r, y * zr0*r, z0 *r);
-	 	 glVertex3f(x * zr0*r, y * zr0*r, z0* r);
-	 	 glNormal3f(x * zr1*r, y * zr1*r, z1*r);
-	 	 glVertex3f(x * zr1*r, y * zr1*r, z1*r);
+	 	 glNormal3f(x * zr0*radius, y * zr0*radius, z0 *radius);
+	 	 glVertex3f(x * zr0*radius, y * zr0*radius, z0* radius);
+	 	 glNormal3f(x * zr1*radius, y * zr1*radius, z1*radius);
+	 	 glVertex3f(x * zr1*radius, y * zr1*radius, z1*radius);
 	 	 }
 	 glEnd();
 	 }
+}
+
+double GameBall::getRadius() {
+	return radius;
+}
+
+double GameBall::getXPos() {
+	return xPos;
+}
+
+double GameBall::getYPos() {
+	return yPos;
+}
+
+double GameBall::getZPos() {
+	return zPos;
 }

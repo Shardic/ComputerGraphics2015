@@ -172,14 +172,20 @@ void Preview(GLFWwindow* window) {
 	// die Kugel sich bewegt
 	if (playerSetsObjects) {
 		//In diesem Teil der Schleife kann der Nutzer von der Draufsicht
-		// die Objekte setzen
+		// die Objekte setzen in der Schleife wird nur abgefragt wo diese hin sollen
 		// also eine bestimmte Anzahl an Mauern un Zylindern
+		// mit Y kann dieser Teil beendet werden
 		glfwSetKeyCallback(window, key_firstCallback);
 	} else {
 		//Wenn das Spiel gestartet wurde wird die sich
-		//bewegende Kugel bewegend gezeichnet und Rotationstasten funktionieren nun
+		//bewegende Kugel versetzt und deren Kollision berechnet
+		//währenddessen kann man das gesamte Feld drehen wie man möchte
 		glfwSetKeyCallback(window, key_callbackBox);
 	}
+	//Der Ball wird immer gezeichnet, aber seperat, da er beweglich ist
+	//Die Objekte werden sobald der Spieler diese platziert hat gezeichnet
+	objectManager.drawPlacedObjects();
+	objectManager.drawGameBalls();
 }
 
 int main() {
@@ -192,7 +198,7 @@ int main() {
   }
 
   window = glfwCreateWindow(window_width_, window_height_,
-                            "Open The Box", NULL, NULL);
+                            "Be the Pinball table", NULL, NULL);
 
   if(!window) {
     glfwTerminate();
@@ -220,11 +226,6 @@ int main() {
 
   return 0;
 }
-
-
-
-
-
 
 //Das war in der Preview:
 /*
