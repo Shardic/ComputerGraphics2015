@@ -4,7 +4,6 @@
 #include "Cylinder.h"
 #include "Wall.h"
 #include "GameBall.h"
-#include "SmallBall.h"
 #include <vector>
 
 class ObjectManager{
@@ -16,7 +15,7 @@ private:
 	std::vector<Cylinder> cylinderVector;
 	std::vector<Wall> wallVector;
 	std::vector<Wall> wallVectorBorders;
-	std::vector<SmallBall> ballsVector;
+	std::vector<GameBall> ballsVector;
 public:
 	ObjectManager();
 	~ObjectManager();
