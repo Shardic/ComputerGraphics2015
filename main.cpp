@@ -44,6 +44,13 @@ static void key_firstCallback(GLFWwindow* window, int key, int scancode, int act
     //Tasten um zwischen Mauern und Zylindern umzuschalten:
 
 }
+//mausklicks werden hier abgefangen
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    	cout << "klick" << endl;
+    }
+}
 
 // Die Funktion die beim durchlaufen des Spiels fuer die Tasteneingabe gebraucht wird
 //Dadurch wird die Rotation usw. umgesetzt
@@ -175,6 +182,7 @@ void Preview(GLFWwindow* window) {
 		// die Objekte setzen in der Schleife wird nur abgefragt wo diese hin sollen
 		// also eine bestimmte Anzahl an Mauern un Zylindern
 		// mit Y kann dieser Teil beendet werden
+		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetKeyCallback(window, key_firstCallback);
 	} else {
 		//Wenn das Spiel gestartet wurde wird die sich
@@ -191,7 +199,9 @@ void Preview(GLFWwindow* window) {
 int main() {
   GLFWwindow* window = NULL;
 
-  printf("Here we go!\n");
+  cout << "Here we go!" << endl ;
+
+  //printf("Here we go!\n");
 
   if(!glfwInit()){
     return -1;
