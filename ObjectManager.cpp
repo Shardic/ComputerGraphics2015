@@ -123,6 +123,10 @@ void ObjectManager::setUsersWall(float x1, float y1, float x2, float y2) {
 
 void ObjectManager::setUserCylinder(double xPos, double yPos) {
 	Cylinder *cylinder = new Cylinder();
+	cylinder->setRadius(0.4);
+	cylinder->setXPos(xPos);
+	cylinder->setYPos(yPos);
+	cylinder->rearangeZPos();
 	cylinderVector.push_back(*cylinder);
 }
 

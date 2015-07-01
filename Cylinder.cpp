@@ -10,10 +10,7 @@ Cylinder::~Cylinder(){
 }
 
 void Cylinder::drawCylinder() {
-	int numMajor = 60;
-	int numMinor = 60;
-	float height = 2;
-	float radius = 1;
+	glTranslated(xPos,yPos,zPos);
 	double majorStep = height / numMajor;
 	double minorStep = 2.0 * M_PI / numMinor;
 	int i, j;
@@ -32,4 +29,31 @@ void Cylinder::drawCylinder() {
 	}
 	glEnd();
 	}
+}
+
+double Cylinder::getRadius() {
+	return radius;
+}
+void Cylinder::setRadius(double r) {
+	this->radius = r;
+}
+
+double Cylinder::getXPos() {
+	return xPos;
+}
+
+void Cylinder::setXPos(double x) {
+	this->xPos = x;
+}
+
+double Cylinder::getYPos() {
+	return yPos;
+}
+
+void Cylinder::setYPos(double y) {
+	this->yPos = y;
+}
+
+void Cylinder::rearangeZPos() {
+	this->zPos = radius;
 }
