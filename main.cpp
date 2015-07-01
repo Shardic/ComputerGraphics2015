@@ -21,6 +21,11 @@ static bool playerSetsWall = false;
 static bool playerSetsCylinder = false;
 static int wallClickCounter = 0;
 
+float x1Wall;
+float y1Wall;
+float x2Wall;
+float y2Wall;
+
 static double xCord = 0;
 static double yCord = 0;
 static double zCord = -13;
@@ -60,56 +65,27 @@ static void key_firstCallback(GLFWwindow* window, int key, int scancode, int act
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    	cout << "klick" << endl;
+    	cout << "click" << endl;
 
-    	while (playerSetsCylinder) {
+    	if (playerSetsCylinder) {
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    			double x;
-    			double y;
-    			glfwGetCursorPos(window, &x, &y);
-    			y = 5 - y/window_width_ * 10;
-    			x = -5 + x/window_height_ * 10;
-    			float x1 = (float)x;
-    			float y1 = (float)y;
+    			float x1 = (float)xMouse;
+    			float y1 = (float)yMouse;
     			playerSetsCylinder = false;
     		}
     	}
-
-
-    	while (playerSetsWall && wallClickCounter != 2) {
-    		float x1;
-    		float y1;
-    		float x2;
-    		float y2;
-
-    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 0) {
-    			double x;
-    			double y;
+    	if (playerSetsWall && wallClickCounter == 0) {
     			wallClickCounter++;
-    			glfwGetCursorPos(window, &x, &y);
-    			y = 5 - y/window_width_ * 10;
-    			x = -5 + x/window_height_ * 10;
-    			x1 = (float)x;
-    			y1 = (float)y;
-    		}
-    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 1) {
-    			double x;
-    			double y;
-    			wallClickCounter++;
-    		    glfwGetCursorPos(window, &x, &y);
-    		    y = 5 - y/window_width_ * 10;
-    		    x = -5 + x/window_height_ * 10;
-    		    x2 = (float)x;
-    		    y2 = (float)y;
-    		    objectManager.drawUsersWall(x1, y1, x2, y2);
-    		}
-    	}
-    	if (wallClickCounter == 2) {
-    		playerSetsWall = false;
-    		wallClickCounter = 0;
-    	}
-
-    }
+    			x1Wall = (float)xMouse;
+    			y1Wall = (float)yMouse;
+    	} else if (playerSetsWall && wallClickCounter == 1) {
+    			x2Wall = (float)xMouse;
+    		    y2Wall = (float)yMouse;
+    		    objectManager.drawUsersWall(x1Wall, y1Wall, x2Wall, y2Wall);
+        		playerSetsWall = false;
+        		wallClickCounter = 0;
+   		}
+   	}
 }
 
 // Die Funktion die beim durchlaufen des Spiels fuer die Tasteneingabe gebraucht wird
@@ -182,8 +158,8 @@ static void key_callbackBox(GLFWwindow* window, int key, int scancode, int actio
 // The mouse Position gets asked and translated to world coordinates
 // TODO: gehört hier die Abfrage ob er klickt auch dazu?)
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
-	yMouse = 5 - ypos/window_width_ * 10;
-	xMouse = -5 + xpos/window_height_ * 10;
+	yMouse = (zCord*-1) - ypos/window_width_ * (zCord*-1*2);
+	xMouse = -(zCord*-1) + xpos/window_height_ * (zCord*-1*2);
 }
 
 // set viewport transformations and draw objects
@@ -229,6 +205,7 @@ void InitLighting() {
 void Preview(GLFWwindow* window) {
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_NORMALIZE);
+	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	//die Rotationen der gezeigten Objekte im Spiel werden im Manager durchgeführt
 	objectManager.transRotateAllObjekts(xCord,yCord,zCord,
 			rotateRightLeft,rotateUpDown,rotateZ);
