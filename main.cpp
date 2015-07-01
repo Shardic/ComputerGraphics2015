@@ -64,35 +64,41 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
     	while (playerSetsCylinder) {
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    			double *x;
-    			double *y;
-    			glfwGetCursorPos(window, x, y);
-    			float* x1 = (float)x;
-    			float* y1 = (float)y;
+    			double x;
+    			double y;
+    			glfwGetCursorPos(window, &x, &y);
+    			y = 5 - y/window_width_ * 10;
+    			x = -5 + x/window_height_ * 10;
+    			float x1 = (float)x;
+    			float y1 = (float)y;
     			playerSetsCylinder = false;
     		}
     	}
 
 
     	while (playerSetsWall && wallClickCounter != 2) {
-    		float* x1;
-    		float* y1;
-    		float* x2;
-    		float* y2;
+    		float x1;
+    		float y1;
+    		float x2;
+    		float y2;
 
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 0) {
-    			double *x;
-    			double *y;
+    			double x;
+    			double y;
     			wallClickCounter++;
-    			glfwGetCursorPos(window, x, y);
+    			glfwGetCursorPos(window, &x, &y);
+    			y = 5 - y/window_width_ * 10;
+    			x = -5 + x/window_height_ * 10;
     			x1 = (float)x;
     			y1 = (float)y;
     		}
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && wallClickCounter == 1) {
-    			double *x;
-    			double *y;
+    			double x;
+    			double y;
     			wallClickCounter++;
-    		    glfwGetCursorPos(window, x, y);
+    		    glfwGetCursorPos(window, &x, &y);
+    		    y = 5 - y/window_width_ * 10;
+    		    x = -5 + x/window_height_ * 10;
     		    x2 = (float)x;
     		    y2 = (float)y;
     		    objectManager.drawUsersWall(x1, y1, x2, y2);
