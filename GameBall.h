@@ -19,7 +19,12 @@ public:
 	~GameBall();
 	void drawSphere();
 	double getRadius();
+	void setRadius(double r);
 	double getXPos();
+	void setXPos(double x);
 	double getYPos();
+	void setYPos(double y);
 	double getZPos();
+	//Zur sicherheit, da man den Radius geaendert hat
+	void rearangeZPos();
 };

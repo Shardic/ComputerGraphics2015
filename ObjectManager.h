@@ -8,6 +8,12 @@
 
 class ObjectManager{
 private:
+	double xCord =0;
+	double yCord =0;
+	double zCord =0;
+	double rotateRightLeft =0;
+	double rotateUpDown =0;
+	double rotateZ =0;
 	ColorSetter *colorSetter  = new ColorSetter();
 	GameField *gameField = new GameField();
 	bool fieldWallsCreated = false;
@@ -22,8 +28,10 @@ public:
 	void transRotateAllObjekts(double xcord, double ycord, double zcoord,
 			double rotateRightLeft, double rotateUpDown, double rotateZ);
 	void initGameField(float fieldSize);
-	void drawPlacedObjects();
-	void drawUsersWall(float x1, float y1, float x2, float y2);
 	void drawGameBalls();
+	void drawPlacedObjects();
+	void setUsersWall(float x1, float y1, float x2, float y2);
+	void setUserCylinder();
+	void setUserSmallBall(double xPos, double yPos);
 	void checkColision();
 };

@@ -37,15 +37,30 @@ void GameBall::drawSphere() {
 double GameBall::getRadius() {
 	return radius;
 }
+void GameBall::setRadius(double r) {
+	this->radius = r;
+}
 
 double GameBall::getXPos() {
 	return xPos;
+}
+
+void GameBall::setXPos(double x) {
+	this->xPos = x;
 }
 
 double GameBall::getYPos() {
 	return yPos;
 }
 
+void GameBall::setYPos(double y) {
+	this->yPos = y;
+}
+
 double GameBall::getZPos() {
 	return zPos;
+}
+
+void GameBall::rearangeZPos() {
+	this->zPos = radius;
 }

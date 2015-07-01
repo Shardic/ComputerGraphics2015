@@ -12,6 +12,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
+#include <string>
 #define _USE_MATH_DEFINES
 #include "ObjectManager.h"
 using namespace std;
@@ -20,6 +22,7 @@ using namespace std;
 static ObjectManager objectManager;
 
 static bool playerSetsObjects = true;
+static bool playerSetsSmallBall = false;
 static bool playerSetsWall = false;
 static bool playerSetsCylinder = false;
 static int wallClickCounter = 0;
@@ -28,6 +31,8 @@ float x1Wall;
 float y1Wall;
 float x2Wall;
 float y2Wall;
+float x1Ball;
+float y1Ball;
 
 static double xCord = 0;
 static double yCord = 0;
@@ -62,32 +67,38 @@ static void key_firstCallback(GLFWwindow* window, int key, int scancode, int act
     if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
         playerSetsCylinder = true;
     }
+    //Kleinere Bälle
+    if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+    	playerSetsSmallBall = true;
+    }
 
 }
 //mausklicks werden hier abgefangen
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    	cout << "click" << endl;
 
     	if (playerSetsCylinder) {
-    		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-    			float x1 = (float)xMouse;
-    			float y1 = (float)yMouse;
+			float x1 = (float)xMouse;
+			float y1 = (float)yMouse;
 
-    			playerSetsCylinder = false;
-    		}
-    	}
-    	if (playerSetsWall && wallClickCounter == 0) {
+			playerSetsCylinder = false;
+    	} else if (playerSetsWall && wallClickCounter == 0) {
     			wallClickCounter++;
     			x1Wall = (float)xMouse;
     			y1Wall = (float)yMouse;
     	} else if (playerSetsWall && wallClickCounter == 1) {
     			x2Wall = (float)xMouse;
     		    y2Wall = (float)yMouse;
-    		    objectManager.drawUsersWall(x1Wall, y1Wall, x2Wall, y2Wall);
+    		    objectManager.setUsersWall(x1Wall, y1Wall, x2Wall, y2Wall);
         		playerSetsWall = false;
         		wallClickCounter = 0;
+   		} else if (playerSetsSmallBall) {
+   			//kleinere Bälle setzen
+			x1Ball = (float)xMouse;
+			y1Ball = (float)yMouse;
+			objectManager.setUserSmallBall(x1Ball,y1Ball);
+			playerSetsSmallBall = false;
    		}
    	}
 }
@@ -242,14 +253,12 @@ int main() {
 
   cout << "Here we go!" << endl ;
 
-  //printf("Here we go!\n");
-
   if(!glfwInit()){
     return -1;
   }
 
   window = glfwCreateWindow(window_width_, window_height_,
-                            "Be the Pinball table", NULL, NULL);
+                            "The Pinball", NULL, NULL);
 
   if(!window) {
     glfwTerminate();
@@ -258,17 +267,22 @@ int main() {
 
   glfwMakeContextCurrent(window);
   InitLighting();
+
   double lastTime, nowTime, delta, ms;
   double timer = glfwGetTime();
   int fps = 0;
+  //ms = 2.0;
   ms = 37.03703;
   lastTime = glfwGetTime() * 1000; //time in ms
+
   while(!glfwWindowShouldClose(window)) {
+
 	nowTime = glfwGetTime() * 1000;
 	delta += (nowTime - lastTime) / ms;
 	lastTime = nowTime;
+
 	if (delta >= 1) {
-		fps++;
+
 	    // sets the Background Color // TODO: maybe we want a Texture
 	    glClearColor(0.8, 0.8, 0.8, 1.0);
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -277,52 +291,26 @@ int main() {
 	    // make it appear (before this, it's hidden in the rear buffer)
 	    glfwSwapBuffers(window);
 	    glfwPollEvents();
+
+	    fps++;
 	    delta = 0;
+
 	    if ((glfwGetTime()-timer)>=1) {
-	    	cout <<  "fps: " << fps << endl;
+	    	stringstream fpsStream;
+	    	fpsStream << fps;
+	    	string temp_str = "The Pinball, FPS is " + fpsStream.str();
+	    	char const* pchar = temp_str.c_str();
+	    	glfwSetWindowTitle(window,pchar);
 	    	timer = glfwGetTime();
 	    	fps = 0;
 	    }
+
 	}
   }
 
   glfwTerminate();
 
-  printf("Goodbye!\n");
+  cout << "Good Bye!" << endl;
 
   return 0;
 }
-
-//Das war in der Preview:
-/*
-
-// der Code für den Ball und die Kollisionserkennung
-glLoadIdentity();
-glfwSetCursorPosCallback(window, cursor_pos_callback);
-glTranslated(xMouse,yMouse,-10);
-SetMaterialColor(1, 1, 1, 0);
-SetMaterialColor(2, 0, 0, 1);
-
-//MaterialColors for the cube
-SetMaterialColor(1, 1, 0, 0);
-SetMaterialColor(2, 0, 0, 1);
-glLoadIdentity();
-
-glfwSetKeyCallback(window, key_callbackBox);
-glTranslated(xCord, yCord, zCord);
-glRotated(rotateUpDown, 1, 0, 0);
-glRotated(rotateRightLeft, 0, 1, 0);
-glRotated(rotateZ,0,0,1);
-
-objects.drawCubeWithoutTop(edgeLength);
-
-if(closeNormal) {
-	  glTranslated(0, edgeLength/2, -edgeLength/2);
-	  objects.openCloseNormal();
-	  objects.drawTopOfCube(edgeLength);
-} else {
-	  //Wegen der komplexität des Mechanismuss wird die Zeichnung während des schließens vorgenommen
-	  glTranslated(0, edgeLength/2, -edgeLength/2);
-	  objects.openCloseAccordion(edgeLength);
-}
-*/

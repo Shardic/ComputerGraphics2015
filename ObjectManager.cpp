@@ -10,6 +10,12 @@ ObjectManager::~ObjectManager(){
 
 void ObjectManager::transRotateAllObjekts(double xCord, double yCord, double zCord,
 		double rotateRightLeft, double rotateUpDown, double rotateZ) {
+	this->xCord = xCord;
+	this->yCord = yCord;
+	this->zCord = zCord;
+	this->rotateRightLeft = rotateRightLeft;
+	this->rotateUpDown = rotateUpDown;
+	this->rotateZ = rotateZ;
 	glLoadIdentity();
 	glTranslated(xCord, yCord, zCord);
 	glRotated(rotateUpDown, 1, 0, 0);
@@ -58,7 +64,16 @@ void ObjectManager::initGameField(float fieldSize) {
 	glPopMatrix();
 }
 
+void ObjectManager::drawGameBalls() {
+	//SpielKugel erstellen
+	glPushMatrix(); // bei anderen Objekten an anderen Stellen immer pushen und poppen damit die Ursprungsposition des Fields bestehen bleibt
+	colorSetter->SetMaterialColor(2,0.0,0.0,1.0);
+	gameBall->drawSphere(); //TODO Bewegung der Kugel hier regeln und mit den Positionseigenschaten oder in der Kugel selbst ?
+	glPopMatrix();
+}
+
 void ObjectManager::drawPlacedObjects() {
+	//Alle Wänder vom Nutzer zeichnen
 	glPushMatrix();
 	// Ein etwas anderes Rot für die gesetzten Walls
 	colorSetter->SetMaterialColor(2,0.5,0.1,0);
@@ -67,19 +82,39 @@ void ObjectManager::drawPlacedObjects() {
 		wallVector[i].drawWall();
 	}
 	glPopMatrix();
+	//Alle Zylinder vom Nutzer zeichnen
+	//Alle kleinen Bälle zeichnen
+	glPushMatrix();
+	// Ein etwas anderes Rot für die gesetzten Walls
+	colorSetter->SetMaterialColor(2,1,1,0);
+	colorSetter->SetMaterialColor(1,1,1,0);
+	for (int j = 0; j < ballsVector.size(); j++) {
+		ballsVector[j].drawSphere();
+		//Zurücksetzen der Game Welt, da die Bälle die Welt versetzen um gezeichnet zu werden
+		glLoadIdentity();
+		this->transRotateAllObjekts(xCord,yCord,zCord,
+			 rotateRightLeft, rotateUpDown, rotateZ);
+	}
+	glPopMatrix();
 }
 
-void ObjectManager::drawUsersWall(float x1, float y1, float x2, float y2) {
+void ObjectManager::setUsersWall(float x1, float y1, float x2, float y2) {
 	Wall *wall = new Wall();
 	wall->setWall(x1, y1, x2, y2);
 	wallVector.push_back(*wall);
 }
 
-void ObjectManager::drawGameBalls() {
-	//SpielKugel erstellen
-	glPushMatrix(); // bei anderen Objekten an anderen Stellen immer pushen und poppen damit die Ursprungsposition des Fields bestehen bleibt
-	colorSetter->SetMaterialColor(2,0.0,0.0,1.0);
-	gameBall->drawSphere(); //TODO Bewegung der Kugel hier regeln und mit den Positionseigenschaten oder in der Kugel selbst ?
-	glPopMatrix();
+void ObjectManager::setUserCylinder() {
 
 }
+
+void ObjectManager::setUserSmallBall(double xPos, double yPos) {
+	GameBall *smallBall = new GameBall();
+	smallBall->setRadius(0.4);
+	smallBall->setXPos(xPos);
+	smallBall->setYPos(yPos);
+	smallBall->rearangeZPos();
+	ballsVector.push_back(*smallBall);
+}
+
+
