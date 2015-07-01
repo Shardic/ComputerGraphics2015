@@ -59,10 +59,6 @@ void ObjectManager::initGameField(float fieldSize) {
 }
 
 void ObjectManager::drawPlacedObjects() {
-	//TODO löschen:
-	Wall *testWall = new Wall();
-	testWall->setWall(3.924324, 4.234, 6.4342, -3.342);
-	wallVector.push_back(*testWall);
 	glPushMatrix();
 	// Ein etwas anderes Rot für die gesetzten Walls
 	colorSetter->SetMaterialColor(2,0.5,0.1,0);

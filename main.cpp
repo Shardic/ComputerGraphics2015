@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
+#include <iostream>
+#include <cstdio>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -255,17 +258,32 @@ int main() {
 
   glfwMakeContextCurrent(window);
   InitLighting();
-
+  double lastTime, nowTime, delta, ms;
+  double timer = glfwGetTime();
+  int fps = 0;
+  ms = 37.03703;
+  lastTime = glfwGetTime() * 1000; //time in ms
   while(!glfwWindowShouldClose(window)) {
-
-    // sets the Background Color // TODO: maybe we want a Texture
-    glClearColor(0.8, 0.8, 0.8, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // draw the scene
-    Preview(window);
-    // make it appear (before this, it's hidden in the rear buffer)
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+	nowTime = glfwGetTime() * 1000;
+	delta += (nowTime - lastTime) / ms;
+	lastTime = nowTime;
+	if (delta >= 1) {
+		fps++;
+	    // sets the Background Color // TODO: maybe we want a Texture
+	    glClearColor(0.8, 0.8, 0.8, 1.0);
+	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	    // draw the scene
+	    Preview(window);
+	    // make it appear (before this, it's hidden in the rear buffer)
+	    glfwSwapBuffers(window);
+	    glfwPollEvents();
+	    delta = 0;
+	    if ((glfwGetTime()-timer)>=1) {
+	    	cout <<  "fps: " << fps << endl;
+	    	timer = glfwGetTime();
+	    	fps = 0;
+	    }
+	}
   }
 
   glfwTerminate();
