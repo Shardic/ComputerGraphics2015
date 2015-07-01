@@ -2,6 +2,10 @@
 #include "ObjectManager.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
 
 ObjectManager::ObjectManager() {
 }
@@ -85,12 +89,25 @@ void ObjectManager::drawPlacedObjects() {
 	//Alle Zylinder vom Nutzer zeichnen
 	//Alle kleinen Bälle zeichnen
 	glPushMatrix();
-	// Ein etwas anderes Rot für die gesetzten Walls
+	//Die Zylinder sind grün
+	colorSetter->SetMaterialColor(2,0,1,0);
+	colorSetter->SetMaterialColor(1,0,1,0);
+	for (int k = 0; k < cylinderVector.size(); k++) {
+			cylinderVector[k].drawCylinder();
+			//FUNKTIONIERT SOWEIT!
+			//Zurücksetzen der Game Welt, da die Zylinder die Welt beim zeichnen versetzen
+			glLoadIdentity();
+			this->transRotateAllObjekts(xCord,yCord,zCord,
+				 rotateRightLeft, rotateUpDown, rotateZ);
+		}
+	glPopMatrix();
+	glPushMatrix();
+	//Die kleineren Bälle sind gelb
 	colorSetter->SetMaterialColor(2,1,1,0);
 	colorSetter->SetMaterialColor(1,1,1,0);
 	for (int j = 0; j < ballsVector.size(); j++) {
 		ballsVector[j].drawSphere();
-		//Zurücksetzen der Game Welt, da die Bälle die Welt versetzen um gezeichnet zu werden
+		//Zurücksetzen der Game Welt, da die Bälle die Welt beim zeichnen versetzen
 		glLoadIdentity();
 		this->transRotateAllObjekts(xCord,yCord,zCord,
 			 rotateRightLeft, rotateUpDown, rotateZ);
@@ -104,8 +121,9 @@ void ObjectManager::setUsersWall(float x1, float y1, float x2, float y2) {
 	wallVector.push_back(*wall);
 }
 
-void ObjectManager::setUserCylinder() {
-
+void ObjectManager::setUserCylinder(double xPos, double yPos) {
+	Cylinder *cylinder = new Cylinder();
+	cylinderVector.push_back(*cylinder);
 }
 
 void ObjectManager::setUserSmallBall(double xPos, double yPos) {
@@ -117,4 +135,11 @@ void ObjectManager::setUserSmallBall(double xPos, double yPos) {
 	ballsVector.push_back(*smallBall);
 }
 
+void ObjectManager::checkColision() {
+
+}
+
+void ObjectManager::moveMovables() {
+
+}
 

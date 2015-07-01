@@ -9,7 +9,6 @@
 #include <time.h>
 #include <iostream>
 #include <cstdio>
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
@@ -81,8 +80,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     	if (playerSetsCylinder) {
 			float x1 = (float)xMouse;
 			float y1 = (float)yMouse;
-
 			playerSetsCylinder = false;
+			objectManager.setUserCylinder(x1, y1);
     	} else if (playerSetsWall && wallClickCounter == 0) {
     			wallClickCounter++;
     			x1Wall = (float)xMouse;

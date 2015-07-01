@@ -2,7 +2,10 @@
 
 class Cylinder{
 private:
+
 public:
 	Cylinder();
 	~Cylinder();
+	void drawCylinder();
+
 };

@@ -31,7 +31,8 @@ public:
 	void drawGameBalls();
 	void drawPlacedObjects();
 	void setUsersWall(float x1, float y1, float x2, float y2);
-	void setUserCylinder();
+	void setUserCylinder(double xPos, double yPos);
 	void setUserSmallBall(double xPos, double yPos);
-	void checkColision();
+	void checkColision(); // evtl. gehört die kollisionserkennung in die move Methode
+	void moveMovables(); //Soll den GameBall und die kleinen Bälle bewegen
 };
