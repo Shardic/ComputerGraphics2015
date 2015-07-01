@@ -71,6 +71,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     			float x1 = (float)xMouse;
     			float y1 = (float)yMouse;
+
     			playerSetsCylinder = false;
     		}
     	}
