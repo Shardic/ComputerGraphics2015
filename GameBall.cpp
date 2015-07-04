@@ -64,3 +64,16 @@ double GameBall::getZPos() {
 void GameBall::rearangeZPos() {
 	this->zPos = radius;
 }
+
+void GameBall::setMoveVector(double xM, double yM) {
+	this->moveVector[0] = xM;
+	this->moveVector[1] = yM;
+}
+
+std::vector<double> GameBall::getMoveVector() {
+	return this->moveVector;
+}
+
+double GameBall::getMoveDelta() {
+	return this->moveDelta;
+}
