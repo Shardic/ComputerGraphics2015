@@ -271,7 +271,7 @@ int main() {
   double timer = glfwGetTime();
   int fps = 0;
   //ms = 2.0;
-  ms = 37.03703;
+  ms = 16.66666;
   lastTime = glfwGetTime() * 1000; //time in ms
 
   while(!glfwWindowShouldClose(window)) {

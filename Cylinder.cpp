@@ -53,7 +53,10 @@ double Cylinder::getYPos() {
 void Cylinder::setYPos(double y) {
 	this->yPos = y;
 }
+void Cylinder::setHeight(double h) {
+	this->height = h;
+}
 
 void Cylinder::rearangeZPos() {
-	this->zPos = radius;
+	this->zPos = 1;
 }

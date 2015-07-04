@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
+#include <time.h>
+#include <cmath>
 using namespace std;
 
 ObjectManager::ObjectManager() {
@@ -29,6 +31,8 @@ void ObjectManager::transRotateAllObjekts(double xCord, double yCord, double zCo
 
 //zeichnet nur das wirkliche GameField und deren Mauern
 void ObjectManager::initGameField(float fieldSize) {
+	double randomX;
+	double randomY;
 	//die Farbe des Feldes auf ein Grün setzen
 	colorSetter->SetMaterialColor(2,0.2196,0.949,0.5843);
 	//das Feld im GameUrsprung zeichnen
@@ -56,8 +60,56 @@ void ObjectManager::initGameField(float fieldSize) {
 			wallVectorBorders.push_back(*wallBottom);	//Vectorstelle 2
 			wallVectorBorders.push_back(*wallLeft);	//Vectorstelle 1
 			wallVectorBorders.push_back(*wallRight); //VectorStelle 0
+
+			endCylinder->setRadius(0.4);
+			endCylinder->setXPos(-9);
+			endCylinder->setYPos(9);
+			endCylinder->setHeight(0.1);
+			endCylinder->rearangeZPos();
+
+			Cylinder *cylinder = new Cylinder();
+			cylinder->setRadius(0.4);
+			cylinder->setXPos(0);
+			cylinder->setYPos(0);
+			cylinder->rearangeZPos();
+			cylinderVector.push_back(*cylinder);
+
+			srand(time(NULL));
+			for (int i = 0; i < 5; i++) {
+				cout << "Ball: " << i ;
+			    do  {
+			        randomX = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+					randomY = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+			    } while (!positionIsOkay(randomX, randomY, 5));
+
+			    cout << " at: " << randomX << " " << randomY << endl;
+				GameBall *smallBall = new GameBall();
+			    smallBall->setRadius(0.4);
+			    smallBall->setXPos(randomX);
+			    smallBall->setYPos(randomY);
+			    smallBall->rearangeZPos();
+			    ballsVector.push_back(*smallBall);
+
+			}for (int i = 0; i < 5; i++) {
+				cout << "Cylinder: " << i ;
+			    do  {
+			        randomX = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+					randomY = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+			    } while (!positionIsOkay(randomX, randomY, 3));
+
+			    cout << " at: " << randomX << " " << randomY << endl;
+				Cylinder *cylinder = new Cylinder();
+				cylinder->setRadius(0.4);
+				cylinder->setXPos(randomX);
+				cylinder->setYPos(randomY);
+				cylinder->rearangeZPos();
+				cylinderVector.push_back(*cylinder);
+
+			}
+
 			fieldWallsCreated = true;
 	}
+
 	//Danach jedes mal die Mauern zeichnen
 	glPushMatrix();
 	colorSetter->SetMaterialColor(2,1,0,0);
@@ -66,14 +118,21 @@ void ObjectManager::initGameField(float fieldSize) {
 		wallVectorBorders[i].drawWall();
 	}
 	glPopMatrix();
+
+
+
 }
 
 void ObjectManager::drawGameBalls() {
+
 	//SpielKugel erstellen
 	glPushMatrix(); // bei anderen Objekten an anderen Stellen immer pushen und poppen damit die Ursprungsposition des Fields bestehen bleibt
 	colorSetter->SetMaterialColor(2,0.0,0.0,1.0);
 	gameBall->drawSphere(); //TODO Bewegung der Kugel hier regeln und mit den Positionseigenschaten oder in der Kugel selbst ?
 	glPopMatrix();
+
+
+
 }
 
 void ObjectManager::drawPlacedObjects() {
@@ -90,8 +149,9 @@ void ObjectManager::drawPlacedObjects() {
 	//Alle kleinen Bälle zeichnen
 	glPushMatrix();
 	//Die Zylinder sind grün
-	colorSetter->SetMaterialColor(2,0,1,0);
-	colorSetter->SetMaterialColor(1,0,1,0);
+	colorSetter->SetMaterialColor(2,1,1,1);
+	colorSetter->SetMaterialColor(1,1,1,1);
+	endCylinder->drawCylinder();
 	for (int k = 0; k < cylinderVector.size(); k++) {
 			cylinderVector[k].drawCylinder();
 			//FUNKTIONIERT SOWEIT!
@@ -146,4 +206,43 @@ void ObjectManager::checkColision() {
 void ObjectManager::moveMovables() {
 
 }
+
+double ObjectManager::doubleRand(double fMin, double fMax)  {
+	double nmr = fmod((double)rand(), fMax) + fMin;
+	//cout << nmr << endl;
+	return nmr;
+
+}
+
+bool ObjectManager::positionIsOkay(double x, double y, double radius) {
+	bool isOkay = true;
+	for (int i = 0; i < ballsVector.size() ; i++) {
+		if (ballsVector[i].getXPos()-x >= radius || ballsVector[i].getXPos()-x <= radius*(-1)
+				|| ballsVector[i].getYPos()-y >= radius || ballsVector[i].getYPos()-y <= radius*(-1)) {
+			if (x >= 6 && y <= -6) {
+				isOkay = false;
+			}
+			if (x <= -6 && y >= 6) {
+				isOkay = false;
+			}
+		}else {
+			isOkay = false;
+		}
+	}
+	for (int j = 0; j < cylinderVector.size(); j++) {
+		if (cylinderVector[j].getXPos()-x >= radius || cylinderVector[j].getXPos()-x <= radius*(-1)
+				|| cylinderVector[j].getYPos()-y >= radius || cylinderVector[j].getYPos()-y <= radius*(-1)) {
+			if (x >= 6 && y <= -6) {
+				isOkay = false;
+			}
+			if (x <= -6 && y >= 6) {
+				isOkay = false;
+			}
+		}else {
+			isOkay = false;
+		}
+	}
+	return isOkay;
+}
+
 

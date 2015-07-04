@@ -22,6 +22,7 @@ private:
 	std::vector<Wall> wallVector;
 	std::vector<Wall> wallVectorBorders;
 	std::vector<GameBall> ballsVector;
+	Cylinder *endCylinder = new Cylinder();;
 public:
 	ObjectManager();
 	~ObjectManager();
@@ -35,4 +36,6 @@ public:
 	void setUserSmallBall(double xPos, double yPos);
 	void checkColision(); // evtl. gehört die kollisionserkennung in die move Methode
 	void moveMovables(); //Soll den GameBall und die kleinen Bälle bewegen
+	double doubleRand(double fMin, double fMax);
+	bool positionIsOkay(double x, double y, double radius);
 };

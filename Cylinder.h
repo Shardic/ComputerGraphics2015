@@ -2,13 +2,13 @@
 
 class Cylinder{
 private:
-	int numMajor = 60;
-	int numMinor = 60;
+	int numMajor = 150;
+	int numMinor = 150;
 	float height = 2;
 	double radius = 0.5;
 	double xPos = 0;
 	double yPos = 0;
-	double zPos = radius;
+	double zPos = 1;
 public:
 	Cylinder();
 	~Cylinder();
@@ -20,5 +20,6 @@ public:
 	double getRadius();
 	void setRadius(double r);
 	void rearangeZPos();
+	void setHeight(double h);
 
 };
