@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdio.h>
 #include <iostream>
+#include <math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
@@ -196,16 +197,79 @@ void ObjectManager::setUserSmallBall(double xPos, double yPos) {
 	smallBall->setXPos(xPos);
 	smallBall->setYPos(yPos);
 	smallBall->rearangeZPos();
+	smallBall->setMoveVector(0.0, 0.0);
 	ballsVector.push_back(*smallBall);
 }
 
-void ObjectManager::checkColision() {
+void ObjectManager::checkCollision() {
+/*
+ * Distanz zwischen zwei Objekten berechnen
+ * 	Dazu: die Movables einzelnd durchgehen
+ * 		In dem durchgehen
+ */
+	//Game Ball mit den Zylindern kollidieren lassen
+	double gBX = gameBall->getXPos();
+	double gBY = gameBall->getYPos();
+	double gBR = gameBall->getRadius();
+	double collisionDistance = 0;
+	for(int i = 0; i < cylinderVector.size(); i++) {
+		double cX = cylinderVector[i].getXPos();
+		double cY =	cylinderVector[i].getYPos();
+		double cR =	cylinderVector[i].getRadius();
+		double dX = gBX - cX;
+		double dY = gBY - cY;
+		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
+		if (collisionDistance <= gBR + cR) {
+			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+			gameBall->setMoveVector(gameBall->getMoveVector()[0]*-2, gameBall->getMoveVector()[1]*-2);
+			//TODO richtige Reflektion eingeben
+		}
+	}
+	//Game Ball mit den Mauern kollidieren lassen
+	for (int k = 0; k < wallVectorBorders.size(); k++) {
+		double wX1 = wallVectorBorders[k].getPoint1x();
+		double wY1 = wallVectorBorders[k].getPoint1y();
+		double wX2 = wallVectorBorders[k].getPoint2x();
+		double wY2 = wallVectorBorders[k].getPoint2y();
+		double dist = this->getDistToWall(gBX, gBY, wX1, wY1, wX2, wY2);
+		//cout << dist << endl;
+		if (dist <= gBR) {
+			//TODO Alle Ballvectoren ändern
+			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+			gameBall->setMoveVector(0,0);
+		}
+	}
 
+	for (int l = 0; l < wallVector.size(); l++) {
+
+	}
+
+	//Game Ball mit anderen Bällen kollidieren lassen
+	for(int j = 0; j < ballsVector.size(); j++) {
+		double cX = ballsVector[j].getXPos();
+		double cY =	ballsVector[j].getYPos();
+		double cR =	ballsVector[j].getRadius();
+		double dX = gBX - cX;
+		double dY = gBY - cY;
+		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
+		if (collisionDistance <= gBR + cR) {
+			//TODO Alle Ballvectoren ändern
+			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+			gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
+		}
+	}
+	//Alle anderen Bälle die gleiche Kolision durchlaufen
 }
 
 void ObjectManager::moveMovables() {
-
+	gameBall->setXPos(gameBall->getXPos()+(gameBall->getMoveVector()[0]/gameBall->getMoveDelta()));
+	gameBall->setYPos(gameBall->getYPos()+(gameBall->getMoveVector()[1]/gameBall->getMoveDelta()));
+	for (int i = 0; i < ballsVector.size(); i++) {
+		ballsVector[i].setXPos(ballsVector[i].getXPos()+(ballsVector[i].getMoveVector()[0]/ballsVector[i].getMoveDelta()));
+		ballsVector[i].setYPos(ballsVector[i].getYPos()+(ballsVector[i].getMoveVector()[1]/ballsVector[i].getMoveDelta()));
+	}
 }
+
 
 double ObjectManager::doubleRand(double fMin, double fMax)  {
 	double nmr = fmod((double)rand(), fMax) + fMin;
@@ -245,4 +309,50 @@ bool ObjectManager::positionIsOkay(double x, double y, double radius) {
 	return isOkay;
 }
 
+
+
+double ObjectManager::getDistToWall(double cObjX, double cObjY, double wX1, double wY1, double wX2, double wY2)
+{
+	vector<double> point (2);
+	vector<double> linestart (2);
+	//vector<double> tr = 1;
+	//vector<double> dad = 2;
+	//vector<double> xxx = dot(tr,dad);
+	vector<double> lineend (2);
+
+	point[0] = cObjX;
+	point[1] = cObjY;
+
+	linestart[0] = wX1;
+	linestart[1] = wY1;
+
+	lineend[0] = wX2;
+	lineend[1] = wY2;
+
+
+	vector<double > a (2);
+	a[0] = lineend[0] - linestart[0];
+	a[1] = lineend[1] - linestart[1];
+	vector<double> b (2);
+	b[0] = point[0] - linestart[0];
+	b[0] = point[1] - linestart[1];
+	double t = (a[0] * b[0] + a[1] * b[1]) /(a[0] * a[0] + a[1] * a[1]);
+
+	cout << t << endl;
+	if (t < 0) t = 0;
+	if (t > 1) t = 1;
+
+	vector<double> base (2);
+	base [0] = linestart[0] + a[0] * t;
+	base [1] = linestart[1] + a[1] * t;
+	//cout << base[0] << endl;
+	//cout << base[1] << endl;
+	vector<double> diffVec (2);
+	diffVec[0] = point[0] - base[0];
+	diffVec[1] = point[1] - base[1];
+
+	double dist = sqrt(diffVec[0]*diffVec[0] + diffVec[1] * diffVec[1]);
+
+	return dist;
+}
 

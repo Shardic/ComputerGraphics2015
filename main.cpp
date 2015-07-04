@@ -1,4 +1,3 @@
-//hallo Olli
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
 #include <windows.h>
@@ -239,7 +238,9 @@ void Preview(GLFWwindow* window) {
 		//Wenn das Spiel gestartet wurde wird die sich
 		//bewegende Kugel versetzt und deren Kollision berechnet
 		//währenddessen kann man das gesamte Feld drehen wie man möchte
+		objectManager.checkCollision();
 		glfwSetKeyCallback(window, key_callbackBox);
+		objectManager.moveMovables();
 	}
 	//Der Ball wird immer gezeichnet, aber seperat, da er beweglich ist
 	//Die Objekte werden sobald der Spieler diese platziert hat gezeichnet
@@ -272,6 +273,7 @@ int main() {
   int fps = 0;
   //ms = 2.0;
   ms = 16.66666;
+
   lastTime = glfwGetTime() * 1000; //time in ms
 
   while(!glfwWindowShouldClose(window)) {

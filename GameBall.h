@@ -1,4 +1,5 @@
 #include <GL/gl.h>
+#include <vector>
 
 class GameBall{
 private:
@@ -10,6 +11,8 @@ private:
 	double yPos = -9;
 	double zPos = radius;
 	// Bewegung muss irgendwie mit richtungsvektoren implementiert werden
+	std::vector<double> moveVector = {0,10};
+	int moveDelta = 100;
 public:
 	GameBall();
 	~GameBall();
@@ -23,4 +26,8 @@ public:
 	double getZPos();
 	//Zur sicherheit, da man den Radius geaendert hat
 	void rearangeZPos();
+	void setMoveVector(double xM, double yM);
+	std::vector<double> getMoveVector();
+	double getMoveDelta();
 };
+

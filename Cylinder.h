@@ -2,8 +2,8 @@
 
 class Cylinder{
 private:
-	int numMajor = 150;
-	int numMinor = 150;
+	int numMajor = 60;
+	int numMinor = 60;
 	float height = 2;
 	double radius = 0.5;
 	double xPos = 0;
