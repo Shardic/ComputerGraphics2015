@@ -89,6 +89,7 @@ void ObjectManager::initGameField(float fieldSize) {
 			    smallBall->setXPos(randomX);
 			    smallBall->setYPos(randomY);
 			    smallBall->rearangeZPos();
+				smallBall->setMoveVector(0.0, 0.0);
 			    ballsVector.push_back(*smallBall);
 
 			}for (int i = 0; i < 5; i++) {
