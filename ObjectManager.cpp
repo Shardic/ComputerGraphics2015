@@ -242,7 +242,17 @@ void ObjectManager::checkCollision() {
 	}
 
 	for (int l = 0; l < wallVector.size(); l++) {
-
+		double wX1 = wallVector[l].getPoint1x();
+		double wY1 = wallVector[l].getPoint1y();
+		double wX2 = wallVector[l].getPoint2x();
+		double wY2 = wallVector[l].getPoint2y();
+		double dist = this->getDistToWall(gBX, gBY, wX1, wY1, wX2, wY2);
+		//cout << dist << endl;
+		if (dist <= gBR) {
+			//TODO Alle Ballvectoren ändern
+			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+			gameBall->setMoveVector(0,0);
+		}
 	}
 
 	//Game Ball mit anderen Bällen kollidieren lassen
@@ -336,7 +346,29 @@ double ObjectManager::getDistToWall(double cObjX, double cObjY, double wX1, doub
 	a[1] = lineend[1] - linestart[1];
 	vector<double> b (2);
 	b[0] = point[0] - linestart[0];
-	b[0] = point[1] - linestart[1];
+	b[1] = point[1] - linestart[1];
+
+		double c1 = a[0] * b[0] + a[1] * b[1];
+
+		if (c1<=0) {
+			return sqrt(((point[0] - linestart[0]) * (point[0] - linestart[0])) + ((point[1] - linestart[1]) * (point[1] - linestart[1])));
+		}
+
+		double c2 = a[0] * a[0] + a[1] * a[1];
+		if (c2<=c1) {
+			return sqrt(((point[0] - lineend[0]) * (point[0] - lineend[0])) + ((point[1] - lineend[1]) * (point[1] - lineend[1])));
+		}
+
+		double be = c1/c2;
+
+		vector<double> pb (2);
+		pb [0] = linestart[0] + (be * a[0]);
+		pb [1] = linestart[1] + (be * a[1]);
+
+		return sqrt(((point[0] - pb[0]) * (point[0] - pb[0])) + ((point[1] - pb[1]) * (point[1] - pb[1])));
+
+
+/*
 	double t = (a[0] * b[0] + a[1] * b[1]) /(a[0] * a[0] + a[1] * a[1]);
 
 	cout << t << endl;
@@ -354,6 +386,6 @@ double ObjectManager::getDistToWall(double cObjX, double cObjY, double wX1, doub
 
 	double dist = sqrt(diffVec[0]*diffVec[0] + diffVec[1] * diffVec[1]);
 
-	return dist;
+	return dist;*/
 }
 
