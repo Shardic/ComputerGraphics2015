@@ -23,6 +23,9 @@ static bool playerSetsObjects = true;
 static bool playerSetsSmallBall = false;
 static bool playerSetsWall = false;
 static bool playerSetsCylinder = false;
+
+static bool gameIsFinished = false;
+
 static int wallClickCounter = 0;
 
 float x1Wall;
@@ -232,15 +235,19 @@ void Preview(GLFWwindow* window) {
 		// die Objekte setzen in der Schleife wird nur abgefragt wo diese hin sollen
 		// also eine bestimmte Anzahl an Mauern un Zylindern
 		// mit Y kann dieser Teil beendet werden
+		objectManager.drawDirectionPointer();
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetKeyCallback(window, key_firstCallback);
-	} else {
+	} else if(!playerSetsObjects && !gameIsFinished) {
 		//Wenn das Spiel gestartet wurde wird die sich
 		//bewegende Kugel versetzt und deren Kollision berechnet
 		//währenddessen kann man das gesamte Feld drehen wie man möchte
+		gameIsFinished = objectManager.checkVictoryCondition();
 		objectManager.checkCollision();
 		glfwSetKeyCallback(window, key_callbackBox);
 		objectManager.moveMovables();
+	} else {
+		objectManager.drawEndScreen();
 	}
 	//Der Ball wird immer gezeichnet, aber seperat, da er beweglich ist
 	//Die Objekte werden sobald der Spieler diese platziert hat gezeichnet
@@ -271,7 +278,6 @@ int main() {
   double lastTime, nowTime, delta, ms;
   double timer = glfwGetTime();
   int fps = 0;
-  //ms = 2.0;
   ms = 16.66666;
 
   lastTime = glfwGetTime() * 1000; //time in ms
@@ -305,7 +311,6 @@ int main() {
 	    	timer = glfwGetTime();
 	    	fps = 0;
 	    }
-
 	}
   }
 

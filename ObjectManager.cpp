@@ -38,6 +38,14 @@ void ObjectManager::initGameField(float fieldSize) {
 	colorSetter->SetMaterialColor(2,0.2196,0.949,0.5843);
 	//das Feld im GameUrsprung zeichnen
 	gameField->drawPlaine(fieldSize);
+	//Das Ziel wird gezeichnet
+	glTranslated(-9,9,0.1);
+	colorSetter->SetMaterialColor(1,0.1,0.5,0.2);
+	colorSetter->SetMaterialColor(2,0.1,0.5,0.2);
+	goal->drawGoal();
+	glLoadIdentity();
+	this->transRotateAllObjekts(xCord, yCord, zCord, rotateRightLeft,
+			rotateUpDown, rotateZ);
 	//Punkte und Speicher für die Mauern nur ein mal belegen:
 	//Die Mauern werden in der Objekte zeichnen Funktion gezeichnet
 	//, sonst wäre alles doppelt zu sehen.
@@ -61,12 +69,6 @@ void ObjectManager::initGameField(float fieldSize) {
 			wallVectorBorders.push_back(*wallBottom);	//Vectorstelle 2
 			wallVectorBorders.push_back(*wallLeft);	//Vectorstelle 1
 			wallVectorBorders.push_back(*wallRight); //VectorStelle 0
-
-			endCylinder->setRadius(0.4);
-			endCylinder->setXPos(-9);
-			endCylinder->setYPos(9);
-			endCylinder->setHeight(0.1);
-			endCylinder->rearangeZPos();
 
 			Cylinder *cylinder = new Cylinder();
 			cylinder->setRadius(0.4);
@@ -108,6 +110,7 @@ void ObjectManager::initGameField(float fieldSize) {
 				cylinderVector.push_back(*cylinder);
 
 			}
+			this->randomizeStartVec();
 
 			fieldWallsCreated = true;
 	}
@@ -126,15 +129,11 @@ void ObjectManager::initGameField(float fieldSize) {
 }
 
 void ObjectManager::drawGameBalls() {
-
 	//SpielKugel erstellen
 	glPushMatrix(); // bei anderen Objekten an anderen Stellen immer pushen und poppen damit die Ursprungsposition des Fields bestehen bleibt
 	colorSetter->SetMaterialColor(2,0.0,0.0,1.0);
 	gameBall->drawSphere(); //TODO Bewegung der Kugel hier regeln und mit den Positionseigenschaten oder in der Kugel selbst ?
 	glPopMatrix();
-
-
-
 }
 
 void ObjectManager::drawPlacedObjects() {
@@ -153,7 +152,6 @@ void ObjectManager::drawPlacedObjects() {
 	//Die Zylinder sind grün
 	colorSetter->SetMaterialColor(2,1,1,1);
 	colorSetter->SetMaterialColor(1,1,1,1);
-	endCylinder->drawCylinder();
 	for (int k = 0; k < cylinderVector.size(); k++) {
 			cylinderVector[k].drawCylinder();
 			//FUNKTIONIERT SOWEIT!
@@ -365,7 +363,7 @@ void ObjectManager::checkCollision() {
 
 		}
 
-		/*for(int o = 0; o < ballsVector.size(); o++) {
+		for(int o = 0; o < ballsVector.size(); o++) {
 				double bX = ballsVector[o].getXPos();
 				double bY =	ballsVector[o].getYPos();
 				double bR =	ballsVector[o].getRadius();
@@ -376,7 +374,7 @@ void ObjectManager::checkCollision() {
 					//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
 
 					vector<double> actualMovevectorBB (2);
-					actualMovevectorBB = gameBall->getMoveVector();
+					actualMovevectorBB = ballsVector[o].getMoveVector();
 					vector<double> actualMovevectorB (2);
 					actualMovevectorB = ballsVector[j].getMoveVector();
 
@@ -393,9 +391,9 @@ void ObjectManager::checkCollision() {
 					/*newVelX =
 					 (firstBall.speed.x * (firstBall.mass – secondBall.mass) + (2 * secondBall.mass * secondBall.speed.x))
 					 / (firstBall.mass + secondBall.mass);
-
+*/
 					}
-		}*/
+		}
 	}
 	//Alle anderen Bälle die gleiche Kolision durchlaufen
 }
@@ -536,5 +534,59 @@ std::vector<double> ObjectManager::closestPointOnLine(double lx1, double ly1, do
       closestPoint[0] = cx;
       closestPoint[1] = cy;
       return closestPoint;
+}
+
+void ObjectManager::drawEndScreen() {
+	cout << "Spiel ist gewonnen worden!" << endl;
+}
+
+void ObjectManager::randomizeStartVec() {
+	srand(time(NULL));
+	bool directionUpToLeft = false;
+	double xDirection = 0;
+	double yDirection = 0;
+	do {
+		xDirection = doubleRand(0, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+		if (xDirection <= 0) {
+			directionUpToLeft = true;
+		}
+	} while (!directionUpToLeft);
+	directionUpToLeft = false;
+	do {
+		yDirection = doubleRand(0, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
+		if (yDirection >= 0) {
+			directionUpToLeft = true;
+		}
+	} while (!directionUpToLeft);
+	this->gameBall->setMoveVector(xDirection, yDirection);
+//	this->gameBall->setMoveVector(-9, 9);
+}
+
+void ObjectManager::drawDirectionPointer() {
+	glTranslated(this->gameBall->getXPos(),this->gameBall->getYPos(),0.1);
+	vector<double> direction = gameBall->getMoveVector();
+	double pointToX = direction[0] / 5;
+	double pointToY = direction[1] / 5;
+	colorSetter->SetMaterialColor(1,0.1,0.5,0.2);
+	colorSetter->SetMaterialColor(2,0.1,0.5,0.2);
+	glBegin(GL_TRIANGLES);
+	glVertex3f(pointToX, pointToY, 0);
+	glVertex3f(-1,-1, 0);
+	glVertex3f(1,1, 0);
+	glEnd();
+	glLoadIdentity();
+	this->transRotateAllObjekts(xCord, yCord, zCord, rotateRightLeft,
+			rotateUpDown, rotateZ);
+}
+
+bool ObjectManager::checkVictoryCondition() {
+	vector<double> pos (2);
+	pos[0] = gameBall->getXPos();
+	pos[1] = gameBall->getYPos();
+	double distanceToGoal = sqrt(((pos[0] - (-9)) * (pos[0] - (-9))) + ((pos[1] - 9) * (pos[1] - 9)));
+	if (distanceToGoal <= (gameBall->getRadius()*1.2)) {
+		return true;
+	}
+	return false;
 }
 
