@@ -222,7 +222,7 @@ void ObjectManager::checkCollision() {
 		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
 		if (collisionDistance <= gBR + cR) {
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-			gameBall->setMoveVector(gameBall->getMoveVector()[0]*-2, gameBall->getMoveVector()[1]*-2);
+			//gameBall->setMoveVector(gameBall->getMoveVector()[0]*-2, gameBall->getMoveVector()[1]*-2);
 			//TODO richtige Reflektion eingeben
 		}
 	}
@@ -237,7 +237,33 @@ void ObjectManager::checkCollision() {
 		if (dist <= gBR) {
 			//TODO Alle Ballvectoren ändern
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-			gameBall->setMoveVector(0,0);
+			vector<double> actualMovevector (2);
+			actualMovevector = gameBall->getMoveVector();
+			if (wX1 == wX2) {
+				gameBall->setMoveVector(-actualMovevector[0],actualMovevector[1]);
+			}
+			if (wY1 == wY2) {
+				gameBall->setMoveVector(actualMovevector[0],-actualMovevector[1]);
+			}
+
+		}
+		for(int m = 0; m < ballsVector.size(); m++) {
+			double bX = ballsVector[m].getXPos();
+			double bY =	ballsVector[m].getYPos();
+			double bR =	ballsVector[m].getRadius();
+			double distToWall = this->getDistToWall(bX, bY, wX1, wY1, wX2, wY2);
+			if (distToWall <= bR) {
+				//TODO Alle Ballvectoren ändern
+				//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+				vector<double> actualMovevector (2);
+				actualMovevector = ballsVector[m].getMoveVector();
+				if (wX1 == wX2) {
+					ballsVector[m].setMoveVector(-actualMovevector[0],actualMovevector[1]);
+				}
+				if (wY1 == wY2) {
+					ballsVector[m].setMoveVector(actualMovevector[0],-actualMovevector[1]);
+				}
+			}
 		}
 	}
 
@@ -251,7 +277,57 @@ void ObjectManager::checkCollision() {
 		if (dist <= gBR) {
 			//TODO Alle Ballvectoren ändern
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-			gameBall->setMoveVector(0,0);
+
+			vector<double> actualMovevector (2);
+			actualMovevector = gameBall->getMoveVector();
+
+			vector<double> gerade (2);
+			if (wX2>wX1) {
+				gerade[0] = wX2-wX1;
+				gerade[1] = wY2-wY1;
+			} else {
+				gerade[0] = wX1-wX2;
+				gerade[1] = wY1-wY2;
+			}
+
+			vector<double> normalVector (2);
+			normalVector[0] = -gerade[1];
+			normalVector[1] = gerade[0];
+
+			double wallX12 = wX1-wX2;
+			double wallY12 = wY1-wY2;
+			double verhaeltnis = wallX12/wallY12;
+
+			//gameBall->setMoveVector(0, 0);
+
+			vector<double> closestPointOnLine (2);
+			closestPointOnLine = this->closestPointOnLine(wX1, wY1, wX2, wY2, gBX, gBY);
+			double extraBallPosX = gBX;
+			double extraBallPosY = gBY;
+
+			vector<double> n (2);
+			n[0] = closestPointOnLine[0] - gBX;
+			n[1] = closestPointOnLine[1] - gBY;
+
+			double n2 = (n[0] * n[0]) + (n[1] * n[1]);
+			double d = sqrt(n2);
+			n[0] = n[0]/d;
+			n[1] = n[1]/d;
+
+			double vn = (n[0] * n[0]) + (n[1] * n[1]);
+
+			vector<double> newMovevector (2);
+			newMovevector[0] = actualMovevector[0] - ((2 * vn) * n[0]);
+			newMovevector[1] = actualMovevector[1] - ((2 * vn) * n[1]);
+
+			gameBall->setMoveVector(newMovevector[0],newMovevector[1]);
+			//gameBall->setMoveVector(0,0);
+
+			//point1 =
+			//point2 = circle position at time of collision/ gBX, gBY
+			//pointC = point of contact between circle and line
+			//point3 = point2 + (point1 - pointC)
+			//directionvector = circle - 2 * (point3 - point2) + point2
 		}
 	}
 
@@ -266,8 +342,60 @@ void ObjectManager::checkCollision() {
 		if (collisionDistance <= gBR + cR) {
 			//TODO Alle Ballvectoren ändern
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-			gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
+			//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
+
+			vector<double> actualMovevectorGB (2);
+			actualMovevectorGB = gameBall->getMoveVector();
+			vector<double> actualMovevectorB (2);
+			actualMovevectorB = ballsVector[j].getMoveVector();
+
+			//Velocity Gameball
+			double newVelXGB = (actualMovevectorGB[0] * (gBR - cR) + (2 * cR * actualMovevectorB[0])) / (gBR + cR);
+			double newVelYGB = (actualMovevectorGB[1] * (gBR - cR) + (2 * cR * actualMovevectorB[1])) / (gBR + cR);
+
+			//Velocity Ball
+			double newVelXB = (actualMovevectorB[0] * (cR - gBR) + (2 * gBR * actualMovevectorGB[0])) / (gBR + cR);
+			double newVelYB = (actualMovevectorB[1] * (cR - gBR) + (2 * gBR * actualMovevectorGB[1])) / (gBR + cR);
+
+			gameBall->setMoveVector(newVelXGB, newVelYGB);
+			ballsVector[j].setMoveVector(newVelXB, newVelYB);
+			/*newVelX =
+			 (firstBall.speed.x * (firstBall.mass – secondBall.mass) + (2 * secondBall.mass * secondBall.speed.x))
+			 / (firstBall.mass + secondBall.mass);*/
+
 		}
+
+		/*for(int o = 0; o < ballsVector.size(); o++) {
+				double bX = ballsVector[o].getXPos();
+				double bY =	ballsVector[o].getYPos();
+				double bR =	ballsVector[o].getRadius();
+				collisionDistance = sqrt(((bX - cX) * (bX - cX)) + ((bY - cY) * (bY - cY)));
+				if (collisionDistance <= bR + cR && o != j) {
+					//TODO Alle Ballvectoren ändern
+					//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
+					//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
+
+					vector<double> actualMovevectorBB (2);
+					actualMovevectorBB = gameBall->getMoveVector();
+					vector<double> actualMovevectorB (2);
+					actualMovevectorB = ballsVector[j].getMoveVector();
+
+					//Velocity Gameball
+					double newVelXB1 = (actualMovevectorBB[0] * (gBR - cR) + (2 * cR * actualMovevectorB[0])) / (gBR + cR);
+					double newVelYB1 = (actualMovevectorBB[1] * (gBR - cR) + (2 * cR * actualMovevectorB[1])) / (gBR + cR);
+
+					//Velocity Ball
+					double newVelXB2 = (actualMovevectorB[0] * (cR - gBR) + (2 * gBR * actualMovevectorBB[0])) / (gBR + cR);
+					double newVelYB2 = (actualMovevectorB[1] * (cR - gBR) + (2 * gBR * actualMovevectorBB[1])) / (gBR + cR);
+
+					ballsVector[j].setMoveVector(newVelXB1, newVelYB1);
+					ballsVector[o].setMoveVector(newVelXB2, newVelYB2);
+					/*newVelX =
+					 (firstBall.speed.x * (firstBall.mass – secondBall.mass) + (2 * secondBall.mass * secondBall.speed.x))
+					 / (firstBall.mass + secondBall.mass);
+
+					}
+		}*/
 	}
 	//Alle anderen Bälle die gleiche Kolision durchlaufen
 }
@@ -387,5 +515,26 @@ double ObjectManager::getDistToWall(double cObjX, double cObjY, double wX1, doub
 	double dist = sqrt(diffVec[0]*diffVec[0] + diffVec[1] * diffVec[1]);
 
 	return dist;*/
+}
+
+std::vector<double> ObjectManager::closestPointOnLine(double lx1, double ly1, double lx2, double ly2, double x0, double y0){
+      double A1 = ly2 - ly1;
+      double B1 = lx1 - lx2;
+      double C1 = (ly2 - ly1)*lx1 + (lx1 - lx2)*ly1;
+      double C2 = (-B1*x0) + (A1*y0);
+      double det = (A1*A1) - (-B1*B1);
+      double cx = 0;
+      double cy = 0;
+      if(det != 0){
+            cx = (((A1*C1) - (B1*C2))/det);
+            cy = (((A1*C2) - (-B1*C1))/det);
+      }else{
+            cx = x0;
+            cy = y0;
+      }
+      vector<double> closestPoint (2);
+      closestPoint[0] = cx;
+      closestPoint[1] = cy;
+      return closestPoint;
 }
 

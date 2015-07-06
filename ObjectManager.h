@@ -14,6 +14,8 @@ private:
 	double rotateRightLeft =0;
 	double rotateUpDown =0;
 	double rotateZ =0;
+	double extraBallPosX;
+	double extraBallPosY;
 	ColorSetter *colorSetter  = new ColorSetter();
 	GameField *gameField = new GameField();
 	bool fieldWallsCreated = false;
@@ -39,4 +41,5 @@ public:
 	double doubleRand(double fMin, double fMax);
 	bool positionIsOkay(double x, double y, double radius);
 	double getDistToWall(double cObjX, double cObjY, double wX1, double wY1, double wX2, double wY2);
+	std::vector<double> closestPointOnLine(double lx1, double ly1, double lx2, double ly2, double x0, double y0);
 };
