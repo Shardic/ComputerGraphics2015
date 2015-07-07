@@ -121,7 +121,7 @@ void ObjectManager::initGameField(float fieldSize) {
 	glPushMatrix();
 	colorSetter->SetMaterialColor(2,1,0,0);
 	colorSetter->SetMaterialColor(1,1,0,0);
-	for (int i = 0; i < wallVectorBorders.size(); i++) {
+	for (unsigned int i = 0; i < wallVectorBorders.size(); i++) {
 		wallVectorBorders[i].drawWall();
 	}
 	glPopMatrix();
@@ -134,7 +134,7 @@ void ObjectManager::drawGameBalls() {
 	//SpielKugel erstellen
 	glPushMatrix(); // bei anderen Objekten an anderen Stellen immer pushen und poppen damit die Ursprungsposition des Fields bestehen bleibt
 	colorSetter->SetMaterialColor(2,0.0,0.0,1.0);
-	gameBall->drawSphere(); //TODO Bewegung der Kugel hier regeln und mit den Positionseigenschaten oder in der Kugel selbst ?
+	gameBall->drawSphere();
 	glPopMatrix();
 }
 
@@ -144,7 +144,7 @@ void ObjectManager::drawPlacedObjects() {
 	// Ein etwas anderes Rot f¸r die gesetzten Walls
 	colorSetter->SetMaterialColor(2,0.5,0.1,0);
 	colorSetter->SetMaterialColor(1,0.5,0.1,0);
-	for (int i = 0; i < wallVector.size(); i++) {
+	for (unsigned int i = 0; i < wallVector.size(); i++) {
 		wallVector[i].drawWall();
 	}
 	glPopMatrix();
@@ -154,7 +154,7 @@ void ObjectManager::drawPlacedObjects() {
 	//Die Zylinder sind gr¸n
 	colorSetter->SetMaterialColor(2,1,1,1);
 	colorSetter->SetMaterialColor(1,1,1,1);
-	for (int k = 0; k < cylinderVector.size(); k++) {
+	for (unsigned int k = 0; k < cylinderVector.size(); k++) {
 			cylinderVector[k].drawCylinder();
 			//FUNKTIONIERT SOWEIT!
 			//Zur¸cksetzen der Game Welt, da die Zylinder die Welt beim zeichnen versetzen
@@ -167,7 +167,7 @@ void ObjectManager::drawPlacedObjects() {
 	//Die kleineren B‰lle sind gelb
 	colorSetter->SetMaterialColor(2,1,1,0);
 	colorSetter->SetMaterialColor(1,1,1,0);
-	for (int j = 0; j < ballsVector.size(); j++) {
+	for (unsigned int j = 0; j < ballsVector.size(); j++) {
 		ballsVector[j].drawSphere();
 		//Zur¸cksetzen der Game Welt, da die B‰lle die Welt beim zeichnen versetzen
 		glLoadIdentity();
@@ -214,18 +214,16 @@ void ObjectManager::checkCollision() {
 	double gBR = gameBall->getRadius();
 	double collisionDistance = 0;
 
-	for(int i = 0; i < cylinderVector.size(); i++) {
+	// GameBall kollidiert mit den Zylindern
+	for(unsigned int i = 0; i < cylinderVector.size(); i++) {
 		double cX = cylinderVector[i].getXPos();
 		double cY =	cylinderVector[i].getYPos();
 		double cR =	cylinderVector[i].getRadius();
-		double dX = gBX - cX;
-		double dY = gBY - cY;
 		//Abstand zwischen Cylindermittelpunkt und Spielballmittelpunkt
 		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
 		if (collisionDistance <= gBR + cR) {
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
 			//gameBall->setMoveVector(gameBall->getMoveVector()[0]*-2, gameBall->getMoveVector()[1]*-2);
-			//TODO richtige Reflektion eingeben
 			vector<double> actualMovevector (2);
 			actualMovevector = gameBall->getMoveVector();
 
@@ -245,10 +243,25 @@ void ObjectManager::checkCollision() {
 
 						gameBall->setMoveVector(newVelXGB, newVelYGB);
 						ballsVector[j].setMoveVector(newVelXB, newVelYB);*/
+			}
+		//kleiner B‰lle mit den zylindern kollidieren lassen
+		for (unsigned int p = 0; p < ballsVector.size(); p++) {
+			double collisionDistanceToZylinder = sqrt(((ballsVector[p].getXPos() - cX) *
+					(ballsVector[p].getXPos() - cX)) +
+					((ballsVector[p].getYPos() - cY) *
+							(ballsVector[p].getYPos() - cY)));
+			if (collisionDistanceToZylinder <= (ballsVector[p].getRadius() + cR)) {
+				vector<double> moveVec (2);
+				moveVec = ballsVector[p].getMoveVector();
+
+				ballsVector[p].setMoveVector(-moveVec[0],-moveVec[1]);
+			}
 		}
 	}
+
+
 	//Game Ball mit den Auﬂenmauern kollidieren lassen
-	for (int k = 0; k < wallVectorBorders.size(); k++) {
+	for (unsigned int k = 0; k < wallVectorBorders.size(); k++) {
 		double wX1 = wallVectorBorders[k].getPoint1x();
 		double wY1 = wallVectorBorders[k].getPoint1y();
 		double wX2 = wallVectorBorders[k].getPoint2x();
@@ -266,7 +279,8 @@ void ObjectManager::checkCollision() {
 			}
 
 		}
-		for(int m = 0; m < ballsVector.size(); m++) {
+		//Kleine B‰lle mit den Auﬂenmauern kollidieren lassen
+		for(unsigned int m = 0; m < ballsVector.size(); m++) {
 			double bX = ballsVector[m].getXPos();
 			double bY =	ballsVector[m].getYPos();
 			double bR =	ballsVector[m].getRadius();
@@ -287,7 +301,8 @@ void ObjectManager::checkCollision() {
 		}
 	}
 
-	for (int l = 0; l < wallVector.size(); l++) {
+	//Game Ball mit den gesetzten Mauern kollidieren lassen
+	for (unsigned int l = 0; l < wallVector.size(); l++) {
 		double wX1 = wallVector[l].getPoint1x();
 		double wY1 = wallVector[l].getPoint1y();
 		double wX2 = wallVector[l].getPoint2x();
@@ -323,12 +338,13 @@ void ObjectManager::checkCollision() {
 			gameBall->setMoveVector(newMovevector[0],newMovevector[1]);
 		}
 
-		/*for(int p = 0; p < ballsVector.size(); p++) {
+		//Kleine B‰lle mit den gesetzten Mauern Kollidieren lassen
+		for(unsigned int p = 0; p < ballsVector.size(); p++) {
 				double cX = ballsVector[p].getXPos();
 				double cY =	ballsVector[p].getYPos();
 				double cR =	ballsVector[p].getRadius();
 				double distance = this->getDistToWall(cX, cY, wX1, wY1, wX2, wY2);
-				if (dist <= cR) {
+				if (distance <= cR) {
 
 					vector<double> moveVectorB (2);
 					moveVectorB = ballsVector[p].getMoveVector();
@@ -355,21 +371,17 @@ void ObjectManager::checkCollision() {
 								newMovevector[1] = moveVectorB[1] - ((2 * vn) * n[1]);
 
 								ballsVector[p].setMoveVector(newMovevector[0],newMovevector[1]);
-
 				}
-		}*/
+		}
 	}
 
 	//Game Ball mit anderen B‰llen kollidieren lassen
-	for(int j = 0; j < ballsVector.size(); j++) {
+	for(unsigned int j = 0; j < ballsVector.size(); j++) {
 		double cX = ballsVector[j].getXPos();
 		double cY =	ballsVector[j].getYPos();
 		double cR =	ballsVector[j].getRadius();
-		double dX = gBX - cX;
-		double dY = gBY - cY;
 		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
 		if (collisionDistance <= gBR + cR) {
-			//TODO Alle Ballvectoren ‰ndern
 			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
 			//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
 
@@ -408,35 +420,41 @@ void ObjectManager::checkCollision() {
 			ballsVector[j].setMoveVector(v2x, v2y);*/
 		}
 
-		for(int o = 0; o < ballsVector.size(); o++) {
+		//Kleiner B‰lle untereinander kollidieren lassen //TODO funkt noch nicht richtig--> lediglich die Kollision untereinander l‰uft nicht richtig
+		for(unsigned int o = 0; o < ballsVector.size(); o++) {
 				double bX = ballsVector[o].getXPos();
 				double bY =	ballsVector[o].getYPos();
 				double bR =	ballsVector[o].getRadius();
-				collisionDistance = sqrt(((bX - cX) * (bX - cX)) + ((bY - cY) * (bY - cY)));
-				if (collisionDistance <= bR + cR && o != j) {
-					//TODO Alle Ballvectoren ‰ndern
+				collisionDistance = sqrt(((cX - bX) * (cX - bX)) + ((cY - bY) * (cY - bY)));
+				if ((collisionDistance <= bR + cR) && (o != j)) {
+					cout << "erkennt distanz, die kollidieren nur die neuberechnung ist messed up" << endl;
 					//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
 					//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
 
 					vector<double> actualMovevectorBB (2);
-					actualMovevectorBB = ballsVector[o].getMoveVector();
+					actualMovevectorBB = ballsVector[j].getMoveVector();
 					vector<double> actualMovevectorB (2);
-					actualMovevectorB = ballsVector[j].getMoveVector();
+					actualMovevectorB = ballsVector[o].getMoveVector();
+
+
+					cout << actualMovevectorBB[0] << " " << actualMovevectorBB[1] << endl;
+					cout << actualMovevectorB[0] << " " << actualMovevectorB[1] << endl;
+
 
 					//Velocity Gameball
-					double newVelXB1 = (actualMovevectorBB[0] * (gBR - cR) + (2 * cR * actualMovevectorB[0])) / (gBR + cR);
-					double newVelYB1 = (actualMovevectorBB[1] * (gBR - cR) + (2 * cR * actualMovevectorB[1])) / (gBR + cR);
+					double newVelXB1 = (actualMovevectorBB[0] - (actualMovevectorBB[0] * 1/2));
+					double newVelYB1 = (actualMovevectorBB[1] - (actualMovevectorBB[1] * 1/2));
 
 					//Velocity Ball
-					double newVelXB2 = (actualMovevectorB[0] * (cR - gBR) + (2 * gBR * actualMovevectorBB[0])) / (gBR + cR);
-					double newVelYB2 = (actualMovevectorB[1] * (cR - gBR) + (2 * gBR * actualMovevectorBB[1])) / (gBR + cR);
+					double newVelXB2 = (actualMovevectorB[0] + (actualMovevectorBB[0] * 1/2));
+					double newVelYB2 = (actualMovevectorB[1] + (actualMovevectorBB[1] * 1/2));
 
-					ballsVector[j].setMoveVector(newVelXB1, newVelYB1);
+					//cout << newVelXB1 << " " << newVelYB1 << "Ursprungsball neue Vel" << endl;
+					//cout << newVelXB2 << " " << newVelYB2 << "neuer Ball neue Vel" << endl;
+					ballsVector[j].setMoveVector(-newVelXB1, -newVelYB1);
 					ballsVector[o].setMoveVector(newVelXB2, newVelYB2);
-					/*newVelX =
-					 (firstBall.speed.x * (firstBall.mass ñ secondBall.mass) + (2 * secondBall.mass * secondBall.speed.x))
-					 / (firstBall.mass + secondBall.mass);
-*/
+					//cout << ballsVector[j].getMoveVector()[0] << ballsVector[j].getMoveVector()[1] << "gespeicherter Vector Ursprungsball" << endl;
+
 					}
 		}
 		/*
@@ -467,13 +485,14 @@ void ObjectManager::checkCollision() {
 		}
 		*/
 	}
-	//Alle anderen B‰lle die gleiche Kolision durchlaufen
+
+	// Kleinere B‰lle mit den zylindern
 }
 
 void ObjectManager::moveMovables() {
 	gameBall->setXPos(gameBall->getXPos()+(gameBall->getMoveVector()[0]/gameBall->getMoveDelta()));
 	gameBall->setYPos(gameBall->getYPos()+(gameBall->getMoveVector()[1]/gameBall->getMoveDelta()));
-	for (int i = 0; i < ballsVector.size(); i++) {
+	for (unsigned int i = 0; i < ballsVector.size(); i++) {
 		ballsVector[i].setXPos(ballsVector[i].getXPos()+(ballsVector[i].getMoveVector()[0]/ballsVector[i].getMoveDelta()));
 		ballsVector[i].setYPos(ballsVector[i].getYPos()+(ballsVector[i].getMoveVector()[1]/ballsVector[i].getMoveDelta()));
 	}
@@ -489,7 +508,7 @@ double ObjectManager::doubleRand(double fMin, double fMax)  {
 
 bool ObjectManager::positionIsOkay(double x, double y, double radius) {
 	bool isOkay = true;
-	for (int i = 0; i < ballsVector.size() ; i++) {
+	for (unsigned int i = 0; i < ballsVector.size() ; i++) {
 		if (ballsVector[i].getXPos()-x >= radius || ballsVector[i].getXPos()-x <= radius*(-1)
 				|| ballsVector[i].getYPos()-y >= radius || ballsVector[i].getYPos()-y <= radius*(-1)) {
 			if (x >= 6 && y <= -6) {
@@ -502,7 +521,7 @@ bool ObjectManager::positionIsOkay(double x, double y, double radius) {
 			isOkay = false;
 		}
 	}
-	for (int j = 0; j < cylinderVector.size(); j++) {
+	for (unsigned int j = 0; j < cylinderVector.size(); j++) {
 		if (cylinderVector[j].getXPos()-x >= radius || cylinderVector[j].getXPos()-x <= radius*(-1)
 				|| cylinderVector[j].getYPos()-y >= radius || cylinderVector[j].getYPos()-y <= radius*(-1)) {
 			if (x >= 6 && y <= -6) {

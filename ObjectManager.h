@@ -15,8 +15,6 @@ private:
 	double rotateRightLeft =0;
 	double rotateUpDown =0;
 	double rotateZ =0;
-	double extraBallPosX;
-	double extraBallPosY;
 	ColorSetter *colorSetter  = new ColorSetter();
 	GameField *gameField = new GameField();
 	bool fieldWallsCreated = false;

@@ -13,13 +13,6 @@ void Wall::setWall(float x1, float y1, float x2, float y2){
 	this->setPoint2y(y2);
 }
 
-//Da zwischen glBegin und glEnd kein Translated erlaubt ist wird erstmal nur ein
-//Quadrat gezeichnet
-//TODO hübscher machen, also die Breite der Wall mit einbeziehen
-// dazu werden statt einer Fläche min. 6 gebraucht (würfel)
-//TODO Dann können wir uns überlegen, ob wir die Fläche mit einer Auflösung implementieren
-//damit das Licht besser Reflektiet wird, also eine Fläche statt mit einem Quad
-//mit wesentlich mehr Flächen darzustellen
 void Wall::drawWall() {
 	glBegin(GL_QUADS);
 	// right

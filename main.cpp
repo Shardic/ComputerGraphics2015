@@ -25,6 +25,7 @@ static bool playerSetsWall = false;
 static bool playerSetsCylinder = false;
 
 static bool gameIsFinished = false;
+static bool endScreenWasShown = false;
 
 static int wallClickCounter = 0;
 
@@ -172,7 +173,6 @@ static void key_callbackBox(GLFWwindow* window, int key, int scancode, int actio
     }
 }
 // The mouse Position gets asked and translated to world coordinates
-// TODO: gehört hier die Abfrage ob er klickt auch dazu?)
 void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos){
 	yMouse = (zCord*-1) - ypos/window_width_ * (zCord*-1*2);
 	xMouse = -(zCord*-1) + xpos/window_height_ * (zCord*-1*2);
@@ -246,8 +246,9 @@ void Preview(GLFWwindow* window) {
 		objectManager.checkCollision();
 		glfwSetKeyCallback(window, key_callbackBox);
 		objectManager.moveMovables();
-	} else {
+	} else if (gameIsFinished && endScreenWasShown){
 		objectManager.drawEndScreen();
+	} else {
 	}
 	//Der Ball wird immer gezeichnet, aber seperat, da er beweglich ist
 	//Die Objekte werden sobald der Spieler diese platziert hat gezeichnet
@@ -290,7 +291,7 @@ int main() {
 
 	if (delta >= 1) {
 
-	    // sets the Background Color // TODO: maybe we want a Texture
+	    // sets the Background Color
 	    glClearColor(0.8, 0.8, 0.8, 1.0);
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	    // draw the scene
