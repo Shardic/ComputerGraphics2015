@@ -246,8 +246,9 @@ void Preview(GLFWwindow* window) {
 		objectManager.checkCollision();
 		glfwSetKeyCallback(window, key_callbackBox);
 		objectManager.moveMovables();
-	} else if (gameIsFinished && endScreenWasShown){
+	} else if (gameIsFinished && !endScreenWasShown){
 		objectManager.drawEndScreen();
+		endScreenWasShown = true;
 	} else {
 	}
 	//Der Ball wird immer gezeichnet, aber seperat, da er beweglich ist
@@ -266,7 +267,7 @@ int main() {
   }
 
   window = glfwCreateWindow(window_width_, window_height_,
-                            "The Pinball", NULL, NULL);
+                            "Inverse Minigolf", NULL, NULL);
 
   if(!window) {
     glfwTerminate();
@@ -306,7 +307,7 @@ int main() {
 	    if ((glfwGetTime()-timer)>=1) {
 	    	stringstream fpsStream;
 	    	fpsStream << fps;
-	    	string temp_str = "The Pinball, FPS is " + fpsStream.str();
+	    	string temp_str = "Inverse Minigolf, FPS is " + fpsStream.str();
 	    	char const* pchar = temp_str.c_str();
 	    	glfwSetWindowTitle(window,pchar);
 	    	timer = glfwGetTime();

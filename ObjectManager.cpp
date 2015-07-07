@@ -81,13 +81,13 @@ void ObjectManager::initGameField(float fieldSize) {
 
 			srand(time(NULL));
 			for (int i = 0; i < 5; i++) {
-				cout << "Ball: " << i ;
+				// cout << "Ball: " << i ;
 			    do  {
 			        randomX = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
 					randomY = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
 			    } while (!positionIsOkay(randomX, randomY, 5));
 
-			    cout << " at: " << randomX << " " << randomY << endl;
+			    //cout << " at: " << randomX << " " << randomY << endl;
 				GameBall *smallBall = new GameBall();
 			    smallBall->setRadius(0.4);
 			    smallBall->setXPos(randomX);
@@ -97,13 +97,13 @@ void ObjectManager::initGameField(float fieldSize) {
 			    ballsVector.push_back(*smallBall);
 
 			}for (int i = 0; i < 5; i++) {
-				cout << "Cylinder: " << i ;
+				//cout << "Cylinder: " << i ;
 			    do  {
 			        randomX = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
 					randomY = doubleRand(1, gameField->getFieldSize()*2-1) -gameField->getFieldSize();
 			    } while (!positionIsOkay(randomX, randomY, 3));
 
-			    cout << " at: " << randomX << " " << randomY << endl;
+			   // cout << " at: " << randomX << " " << randomY << endl;
 				Cylinder *cylinder = new Cylinder();
 				cylinder->setRadius(0.4);
 				cylinder->setXPos(randomX);
@@ -382,8 +382,6 @@ void ObjectManager::checkCollision() {
 		double cR =	ballsVector[j].getRadius();
 		collisionDistance = sqrt(((gBX - cX) * (gBX - cX)) + ((gBY - cY) * (gBY - cY)));
 		if (collisionDistance <= gBR + cR) {
-			//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-			//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
 
 			vector<double> moveVectorGB (2);
 			moveVectorGB = gameBall->getMoveVector();
@@ -401,45 +399,19 @@ void ObjectManager::checkCollision() {
 			gameBall->setMoveVector(newVelXGB, newVelYGB);
 			ballsVector[j].setMoveVector(newVelXB, newVelYB);
 
-			/*
-			double collisionAngle = atan2(dX, dX);
-			double velocity1 = sqrt((moveVectorGB[0] * moveVectorGB[0]) + (moveVectorGB[1] * moveVectorGB[1]));
-			double velocity2 = sqrt((moveVectorB[0] * moveVectorB[0]) + (moveVectorB[1] * moveVectorB[1]));
-			double vectorDirection1 = atan(moveVectorGB[1]/moveVectorGB[0]);
-			double vectorDirection2 = atan(moveVectorB[1]/moveVectorB[0]);
-
-			double v1x = velocity1 * (cos (vectorDirection1-collisionAngle));
-			double v1y = velocity1 * (sin (vectorDirection1-collisionAngle));
-			double v2x = velocity2 * (cos (vectorDirection2-collisionAngle));
-			double v2y = velocity2 * (sin (vectorDirection2-collisionAngle));
-
-			double f1x = ((v1x*(gBR-cR))+ (2*cR*v2x))/(gBR+cR);
-			double f2x = ((v2x*(gBR-cR))+ (2*cR*v1x))/(gBR+cR);
-
-			gameBall->setMoveVector(v1x, v1y);
-			ballsVector[j].setMoveVector(v2x, v2y);*/
 		}
 
-		//Kleiner Bälle untereinander kollidieren lassen //TODO funkt noch nicht richtig--> lediglich die Kollision untereinander läuft nicht richtig
 		for(unsigned int o = 0; o < ballsVector.size(); o++) {
 				double bX = ballsVector[o].getXPos();
 				double bY =	ballsVector[o].getYPos();
 				double bR =	ballsVector[o].getRadius();
 				collisionDistance = sqrt(((cX - bX) * (cX - bX)) + ((cY - bY) * (cY - bY)));
 				if ((collisionDistance <= bR + cR) && (o != j)) {
-					cout << "erkennt distanz, die kollidieren nur die neuberechnung ist messed up" << endl;
-					//double vp = gameBall->getMoveVector()[0]*dX/collisionDistance + gameBall->getMoveVector()[1]*dY/collisionDistance;
-					//gameBall->setMoveVector(gameBall->getMoveVector()[0]*dX/collisionDistance,gameBall->getMoveVector()[1]*dY/collisionDistance);
 
 					vector<double> actualMovevectorBB (2);
 					actualMovevectorBB = ballsVector[j].getMoveVector();
 					vector<double> actualMovevectorB (2);
 					actualMovevectorB = ballsVector[o].getMoveVector();
-
-
-					cout << actualMovevectorBB[0] << " " << actualMovevectorBB[1] << endl;
-					cout << actualMovevectorB[0] << " " << actualMovevectorB[1] << endl;
-
 
 					//Velocity Gameball
 					double newVelXB1 = (actualMovevectorBB[0] - (actualMovevectorBB[0] * 1/2));
@@ -457,33 +429,6 @@ void ObjectManager::checkCollision() {
 
 					}
 		}
-		/*
-		for(int o = 0; o < ballsVector.size(); o++) {
-			double bX = ballsVector[o].getXPos();
-			double bY =	ballsVector[o].getYPos();
-			double bR =	ballsVector[o].getRadius();
-			collisionDistance = sqrt(((bX - cX) * (bX - cX)) + ((bY - cY) * (bY - cY)));
-			if (collisionDistance <= bR + cR && o != j) {
-				//Movevector Ball 1 and 2
-				vector<double> actualMovevectorBB (2);
-				actualMovevectorBB = ballsVector[o].getMoveVector();
-				vector<double> actualMovevectorB (2);
-				actualMovevectorB = ballsVector[j].getMoveVector();
-
-				//Velocity 1.ball
-				double newVelXB1 = (actualMovevectorBB[0] * (bR - cR) + (2 * cR * actualMovevectorB[0])) / (bR + cR);
-				double newVelYB1 = (actualMovevectorBB[1] * (bR - cR) + (2 * cR * actualMovevectorB[1])) / (bR + cR);
-
-				//Velocity 2.ball
-				double newVelXB2 = (actualMovevectorB[0] * (cR - bR) + (2 * bR * actualMovevectorBB[0])) / (bR + cR);
-				double newVelYB2 = (actualMovevectorB[1] * (cR - bR) + (2 * bR * actualMovevectorBB[1])) / (bR + cR);
-
-				//Change movevector
-				ballsVector[j].setMoveVector(newVelXB1, newVelYB1);
-				ballsVector[o].setMoveVector(newVelXB2, newVelYB2);
-			}
-		}
-		*/
 	}
 
 	// Kleinere Bälle mit den zylindern

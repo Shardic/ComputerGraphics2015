@@ -4,8 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-const float DEG2RAD = 3.14159/180;
-double radius = 0.5;
+#define PI 3.14159265
 
 Goal::Goal() {
 }
@@ -16,7 +15,7 @@ void Goal::drawGoal() {
 	   glBegin(GL_POLYGON);
 	   for (int i = 0; i < 360; i++)
 	   {
-	      float degInRad = i*DEG2RAD;
+	      float degInRad = i*PI/180;
 	      glVertex2f(cos(degInRad)*radius,sin(degInRad)*radius);
 	   }
 
